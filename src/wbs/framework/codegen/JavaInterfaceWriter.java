@@ -6,7 +6,11 @@ import static wbs.utils.collection.CollectionUtils.collectionIsNotEmpty;
 import static wbs.utils.collection.CollectionUtils.listFirstElementRequired;
 import static wbs.utils.collection.CollectionUtils.listLastItemRequired;
 import static wbs.utils.collection.CollectionUtils.listSliceAllButLastItemRequired;
+import static wbs.utils.collection.IterableUtils.iterableMap;
+import static wbs.utils.string.StringUtils.joinWithCommaAndSpace;
 import static wbs.utils.string.StringUtils.joinWithSpace;
+import static wbs.utils.string.StringUtils.stringDoesNotContain;
+import static wbs.utils.string.StringUtils.stringFormat;
 import static wbs.utils.string.StringUtils.stringFormatArray;
 
 import java.util.ArrayList;
@@ -51,7 +55,7 @@ class JavaInterfaceWriter
 		new ArrayList<> ();
 
 	@Getter @Setter
-	List <Function <JavaImportRegistry, String>> extendsInterfaceNames =
+	List <Function <JavaImportRegistry, String>> interfaces =
 		new ArrayList<> ();
 
 	@Getter @Setter
@@ -85,7 +89,7 @@ class JavaInterfaceWriter
 	JavaInterfaceWriter addInterface (
 			@NonNull Function <JavaImportRegistry, String> interfaceName) {
 
-		extendsInterfaceNames.add (
+		interfaces.add (
 			interfaceName);
 
 		return this;
@@ -93,10 +97,77 @@ class JavaInterfaceWriter
 	}
 
 	public
+	JavaInterfaceWriter addInterfaceName (
+			@NonNull String interfaceName,
+			@NonNull List <String> parameters) {
+
+		if (
+			stringDoesNotContain (
+				".",
+				interfaceName)
+		) {
+
+			throw new IllegalArgumentException (
+				stringFormat (
+					"Not a fully qualified interface name: %s",
+					interfaceName));
+
+		}
+
+		for (
+			String parameter
+				: parameters
+		) {
+
+			if (
+				stringDoesNotContain (
+					".",
+					parameter)
+			) {
+
+				throw new IllegalArgumentException (
+					stringFormat (
+						"Not a fully qualified interface name: %s",
+						parameter));
+
+			}
+
+		}
+
+		if (
+			collectionIsNotEmpty (
+				parameters)
+		) {
+
+			return addInterface (
+				imports ->
+					stringFormat (
+						"%s <%s>",
+						imports.register (
+							interfaceName),
+						joinWithCommaAndSpace (
+							iterableMap (
+								parameters,
+								parameter ->
+									imports.register (
+										parameter)))));
+
+		} else {
+
+			return addInterface (
+				imports ->
+					imports.register (
+						interfaceName));
+
+		}
+
+	}
+
+	public
 	JavaInterfaceWriter addInterfaceFormat (
 			@NonNull String ... arguments) {
 
-		extendsInterfaceNames.add (
+		interfaces.add (
 			imports ->
 				imports.register (
 					stringFormatArray (
@@ -166,7 +237,7 @@ class JavaInterfaceWriter
 
 			if (
 				collectionIsEmpty (
-					extendsInterfaceNames)
+					interfaces)
 			) {
 
 				formatWriter.writeLineFormat (
@@ -185,17 +256,17 @@ class JavaInterfaceWriter
 
 			if (
 				collectionIsNotEmpty (
-					extendsInterfaceNames)
+					interfaces)
 			) {
 
 				if (
 					collectionHasOneItem (
-						extendsInterfaceNames)
+						interfaces)
 				) {
 
 					Function <JavaImportRegistry, String> extendsInterfaceName =
 						listFirstElementRequired (
-							extendsInterfaceNames);
+							interfaces);
 
 					formatWriter.writeLineFormat (
 						"\textends %s {",
@@ -208,21 +279,21 @@ class JavaInterfaceWriter
 						"\textends");
 
 					for (
-						Function <JavaImportRegistry, String> extendsInterfaceName
+						Function <JavaImportRegistry, String> interfaceName
 							: listSliceAllButLastItemRequired (
-								extendsInterfaceNames)
+								interfaces)
 					) {
 
 						formatWriter.writeLineFormat (
 							"\t\t%s,",
-							extendsInterfaceName.apply (
+							interfaceName.apply (
 								imports));
 
 					}
 
 					Function <JavaImportRegistry, String> extendsInterfaceName =
 						listLastItemRequired (
-							extendsInterfaceNames);
+							interfaces);
 
 					formatWriter.writeLineFormat (
 						"\t\t%s {",

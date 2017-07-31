@@ -40,6 +40,16 @@ import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
 import wbs.framework.object.ObjectHelper;
 
+import wbs.integrations.shopify.apiclient.ShopifyApiClientCredentials;
+import wbs.integrations.shopify.apiclient.product.ShopifyProductApiClient;
+import wbs.integrations.shopify.apiclient.product.ShopifyProductImageRequest;
+import wbs.integrations.shopify.apiclient.product.ShopifyProductImageResponse;
+import wbs.integrations.shopify.apiclient.product.ShopifyProductOptionRequest;
+import wbs.integrations.shopify.apiclient.product.ShopifyProductRequest;
+import wbs.integrations.shopify.apiclient.product.ShopifyProductResponse;
+import wbs.integrations.shopify.apiclient.product.ShopifyProductVariantRequest;
+import wbs.integrations.shopify.apiclient.product.ShopifyProductVariantResponse;
+
 import wbs.platform.currency.logic.CurrencyLogic;
 import wbs.platform.media.logic.MediaLogic;
 
@@ -50,16 +60,6 @@ import shn.product.model.ShnProductRec;
 import shn.product.model.ShnProductVariantRec;
 import shn.product.model.ShnProductVariantTypeRec;
 import shn.product.model.ShnProductVariantValueRec;
-import shn.shopify.apiclient.ShopifyApiClientCredentials;
-import shn.shopify.apiclient.product.ShopifyProductApiClient;
-import shn.shopify.apiclient.product.ShopifyProductImageRequest;
-import shn.shopify.apiclient.product.ShopifyProductImageResponse;
-import shn.shopify.apiclient.product.ShopifyProductListResponse;
-import shn.shopify.apiclient.product.ShopifyProductOptionRequest;
-import shn.shopify.apiclient.product.ShopifyProductRequest;
-import shn.shopify.apiclient.product.ShopifyProductResponse;
-import shn.shopify.apiclient.product.ShopifyProductVariantRequest;
-import shn.shopify.apiclient.product.ShopifyProductVariantResponse;
 import shn.shopify.model.ShnShopifyConnectionRec;
 
 @SingletonComponent ("shnShopifyProductSynchronisationHelper")
@@ -256,12 +256,9 @@ class ShnShopifyProductSynchronisationHelper
 
 		) {
 
-			ShopifyProductListResponse shopifyProductListResponse =
-				productApiClient.listAllProducts (
-					transaction,
-					credentials);
-
-			return shopifyProductListResponse.products ();
+			return productApiClient.listAll (
+				transaction,
+				credentials);
 
 		}
 
@@ -284,7 +281,7 @@ class ShnShopifyProductSynchronisationHelper
 
 		) {
 
-			productApiClient.removeProduct (
+			productApiClient.remove (
 				transaction,
 				credentials,
 				id);
@@ -309,7 +306,7 @@ class ShnShopifyProductSynchronisationHelper
 
 		) {
 
-			return productApiClient.createProduct (
+			return productApiClient.create (
 				transaction,
 				credentials,
 				request);

@@ -78,6 +78,8 @@ import lombok.experimental.Accessors;
 import wbs.framework.component.annotations.ComponentManagerShutdownBegun;
 import wbs.framework.component.annotations.ComponentManagerStartupComplete;
 import wbs.framework.component.annotations.LateLifecycleSetup;
+import wbs.framework.component.annotations.LifecycleStart;
+import wbs.framework.component.annotations.LifecycleStop;
 import wbs.framework.component.annotations.NormalLifecycleSetup;
 import wbs.framework.component.registry.ComponentDefinition;
 import wbs.framework.component.registry.ComponentRegistry;
@@ -715,6 +717,16 @@ class ComponentManagerImplementation
 				taskLogger,
 				LateLifecycleSetup.class,
 				"Late lifecycle setup",
+				singletonComponents.values ());
+
+			taskLogger.makeException ();
+
+			// run start
+
+			invokeLifecycleMethods (
+				taskLogger,
+				LifecycleStart.class,
+				"Lifecycle start",
 				singletonComponents.values ());
 
 			taskLogger.makeException ();
@@ -2144,6 +2156,14 @@ class ComponentManagerImplementation
 				taskLogger,
 				ComponentManagerShutdownBegun.class,
 				"Component manager shutdown begun",
+				singletonComponents.values ());
+
+			// run stop
+
+			invokeLifecycleMethods (
+				taskLogger,
+				LifecycleStop.class,
+				"Lifecycle stop",
 				singletonComponents.values ());
 
 			// run tear down

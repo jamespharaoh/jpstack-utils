@@ -46,9 +46,9 @@ import wbs.framework.entity.meta.identities.ParentIdFieldSpec;
 import wbs.framework.entity.meta.identities.ParentTypeFieldSpec;
 import wbs.framework.entity.meta.identities.TypeCodeFieldSpec;
 import wbs.framework.entity.meta.model.ModelFieldSpec;
-import wbs.framework.entity.meta.model.ModelImplementsInterfaceSpec;
-import wbs.framework.entity.meta.model.ModelMetaSpec;
+import wbs.framework.entity.meta.model.ModelInterfaceSpec;
 import wbs.framework.entity.meta.model.ModelMetaType;
+import wbs.framework.entity.meta.model.RecordSpec;
 import wbs.framework.entity.record.CommonRecord;
 import wbs.framework.entity.record.EphemeralRecord;
 import wbs.framework.entity.record.EventRecord;
@@ -95,7 +95,7 @@ class ModelRecordGenerator {
 	PluginSpec plugin;
 
 	@Getter @Setter
-	ModelMetaSpec modelMeta;
+	RecordSpec modelMeta;
 
 	// state
 
@@ -196,8 +196,8 @@ class ModelRecordGenerator {
 									recordClassName)));
 
 				for (
-					ModelImplementsInterfaceSpec implementsInterface
-						: modelMeta.implementsInterfaces ()
+					ModelInterfaceSpec implementsInterface
+						: modelMeta.recordInterfaces ()
 				) {
 
 					modelWriter.addImplementsName (
@@ -224,7 +224,9 @@ class ModelRecordGenerator {
 						this::writeCollections)
 
 					.addBlock (
-						this::writeEquals);
+						this::writeEquals)
+
+				;
 
 				if (modelMeta.type ().record ()) {
 
@@ -234,7 +236,9 @@ class ModelRecordGenerator {
 							this::writeCompareTo)
 
 						.addBlock (
-							this::writeToString);
+							this::writeToString)
+
+					;
 
 				}
 

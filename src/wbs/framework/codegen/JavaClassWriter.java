@@ -26,6 +26,7 @@ import static wbs.utils.etc.TypeUtils.typeVariableSourceDeclaration;
 import static wbs.utils.string.StringUtils.camelToSpaces;
 import static wbs.utils.string.StringUtils.joinWithCommaAndSpace;
 import static wbs.utils.string.StringUtils.joinWithSpace;
+import static wbs.utils.string.StringUtils.stringDoesNotContain;
 import static wbs.utils.string.StringUtils.stringEqualSafe;
 import static wbs.utils.string.StringUtils.stringFormat;
 import static wbs.utils.string.StringUtils.stringFormatArray;
@@ -173,6 +174,39 @@ class JavaClassWriter
 	JavaClassWriter addImplementsName (
 			@NonNull String interfaceName,
 			@NonNull List <String> parameters) {
+
+		if (
+			stringDoesNotContain (
+				".",
+				interfaceName)
+		) {
+
+			throw new IllegalArgumentException (
+				stringFormat (
+					"Not a fully qualified class name: %s",
+					interfaceName));
+
+		}
+
+		for (
+			String parameter
+				: parameters
+		) {
+
+			if (
+				stringDoesNotContain (
+					".",
+					parameter)
+			) {
+
+				throw new IllegalArgumentException (
+					stringFormat (
+						"Not a fully qualified class name: %s",
+						parameter));
+
+			}
+
+		}
 
 		if (
 			collectionIsNotEmpty (
@@ -1029,7 +1063,7 @@ class JavaClassWriter
 
 			List <Method> sortedMethods =
 				Arrays.stream (
-					delegateInterface.getDeclaredMethods ())
+					delegateInterface.getMethods ())
 
 				.filter (method ->
 

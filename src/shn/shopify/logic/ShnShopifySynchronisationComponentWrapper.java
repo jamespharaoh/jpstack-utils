@@ -20,8 +20,8 @@ import wbs.framework.logging.LogContext;
 import wbs.framework.logging.OwnedTaskLogger;
 import wbs.framework.logging.TaskLogger;
 
-import shn.shopify.apiclient.ShopifyApiRequestItem;
-import shn.shopify.apiclient.ShopifyApiResponseItem;
+import wbs.integrations.shopify.apiclient.ShopifyApiRequestItem;
+import wbs.integrations.shopify.apiclient.ShopifyApiResponseItem;
 
 @SingletonComponent ("shnShopifySynchronisationComponentWrapper")
 public

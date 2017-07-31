@@ -64,117 +64,28 @@ class DataFromJson {
 	public <Data>
 	Data fromJson (
 			@NonNull Class <Data> dataClass,
-			@NonNull JsonObject jsonValue) {
+			@NonNull JsonElement jsonElement) {
 
-		Data dataValue =
-			classInstantiate (
-				dataClass);
-
-		for (
-			Field field
-				: dataClass.getDeclaredFields ()
+		if (
+			classEqualSafe (
+				dataClass,
+				String.class)
 		) {
 
-			field.setAccessible (true);
+			return dataClass.cast (
+				jsonElement.getAsString ());
 
-			// handle data attribute
+		} else {
 
-			DataAttribute dataAttribute =
-				field.getAnnotation (
-					DataAttribute.class);
-
-			if (
-				isNotNull (
-					dataAttribute)
-			) {
-
-				JsonElement fieldValue =
-					jsonValue.get (
-						ifNull (
-							nullIfEmptyString (
-								dataAttribute.name ()),
-							field.getName ()));
-
-				if (fieldValue == null) {
-					continue;
-				}
-
-				doDataAttribute (
-					dataClass,
-					dataValue,
-					field,
-					dataAttribute,
-					fieldValue);
-
-			}
-
-			// handle data child
-
-			DataChild dataChild =
-				field.getAnnotation (
-					DataChild.class);
-
-			if (
-				isNotNull (
-					dataChild)
-			) {
-
-				Object fieldValue =
-					jsonValue.get (
-						ifNull (
-							nullIfEmptyString (
-								dataChild.name ()),
-							field.getName ()));
-
-				if (fieldValue == null) {
-					continue;
-				}
-
-				doDataChild (
-					dataClass,
-					dataValue,
-					field,
-					dataChild,
-					(JsonObject)
-					fieldValue);
-
-			}
-
-			// handle data children
-
-			DataChildren dataChildren =
-				field.getAnnotation (
-					DataChildren.class);
-
-			if (
-				isNotNull (
-					dataChildren)
-			) {
-
-				Object fieldValue =
-					jsonValue.get (
-						ifNull (
-							dataChildren.childrenElement (),
-							field.getName ()));
-
-				if (fieldValue == null) {
-					continue;
-				}
-
-				doDataChildren (
-					dataClass,
-					dataValue,
-					field,
-					dataChildren,
-					fieldValue);
-
-			}
+			return fromJsonObject (
+				dataClass,
+				jsonElement.getAsJsonObject ());
 
 		}
 
-		return dataValue;
-
 	}
+
+	// private implementation
 
 	private <Data>
 	void doDataAttribute (
@@ -217,6 +128,121 @@ class DataFromJson {
 			field,
 			dataValue,
 			nativeValueOptional);
+
+	}
+
+	private <Data>
+	Data fromJsonObject (
+			@NonNull Class <Data> dataClass,
+			@NonNull JsonObject jsonObject) {
+
+		Data dataValue =
+			classInstantiate (
+				dataClass);
+
+		for (
+			Field field
+				: dataClass.getDeclaredFields ()
+		) {
+
+			field.setAccessible (true);
+
+			// handle data attribute
+
+			DataAttribute dataAttribute =
+				field.getAnnotation (
+					DataAttribute.class);
+
+			if (
+				isNotNull (
+					dataAttribute)
+			) {
+
+				JsonElement fieldValue =
+					jsonObject.get (
+						ifNull (
+							nullIfEmptyString (
+								dataAttribute.name ()),
+							field.getName ()));
+
+				if (fieldValue == null) {
+					continue;
+				}
+
+				doDataAttribute (
+					dataClass,
+					dataValue,
+					field,
+					dataAttribute,
+					fieldValue);
+
+			}
+
+			// handle data child
+
+			DataChild dataChild =
+				field.getAnnotation (
+					DataChild.class);
+
+			if (
+				isNotNull (
+					dataChild)
+			) {
+
+				Object fieldValue =
+					jsonObject.get (
+						ifNull (
+							nullIfEmptyString (
+								dataChild.name ()),
+							field.getName ()));
+
+				if (fieldValue == null) {
+					continue;
+				}
+
+				doDataChild (
+					dataClass,
+					dataValue,
+					field,
+					dataChild,
+					(JsonObject)
+					fieldValue);
+
+			}
+
+			// handle data children
+
+			DataChildren dataChildren =
+				field.getAnnotation (
+					DataChildren.class);
+
+			if (
+				isNotNull (
+					dataChildren)
+			) {
+
+				Object fieldValue =
+					jsonObject.get (
+						ifNull (
+							dataChildren.childrenElement (),
+							field.getName ()));
+
+				if (fieldValue == null) {
+					continue;
+				}
+
+				doDataChildren (
+					dataClass,
+					dataValue,
+					field,
+					dataChildren,
+					fieldValue);
+
+			}
+
+		}
+
+		return dataValue;
 
 	}
 
@@ -351,7 +377,7 @@ class DataFromJson {
 					fromJson (
 						(Class <?>)
 							parameterizedType.getActualTypeArguments () [0],
-						(JsonObject)
+						(JsonElement)
 							jsonObject));
 
 			}

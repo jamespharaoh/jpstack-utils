@@ -171,6 +171,16 @@
 			name="console-reporting"
 			package="wbs.console.reporting"/>
 
+		<!-- integrations -->
+
+		<plugin
+			name="integrations-common"
+			package="wbs.integrations.common"/>
+
+		<plugin
+			name="shopify"
+			package="wbs.integrations.shopify"/>
+
 		<!-- platform -->
 
 		<plugin

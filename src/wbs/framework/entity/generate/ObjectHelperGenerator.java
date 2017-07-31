@@ -929,6 +929,9 @@ class ObjectHelperGenerator {
 
 	}
 
+	// private implementation
+
+	private
 	void addDelegations (
 			@NonNull JavaClassWriter javaWriter) {
 

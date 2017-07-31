@@ -226,6 +226,8 @@ class DbPool
 
 				} catch (InterruptedException exception) {
 
+					Thread.currentThread ().interrupt ();
+
 					throw new RuntimeException (exception);
 
 				}

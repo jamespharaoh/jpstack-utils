@@ -23,7 +23,7 @@ import wbs.framework.component.scaffold.PluginSpec;
 import wbs.framework.entity.build.ModelBuilderManager;
 import wbs.framework.entity.build.ModelFieldBuilderContext;
 import wbs.framework.entity.build.ModelFieldBuilderTarget;
-import wbs.framework.entity.meta.model.ModelMetaSpec;
+import wbs.framework.entity.meta.model.RecordSpec;
 import wbs.framework.entity.record.Record;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.OwnedTaskLogger;
@@ -54,7 +54,7 @@ class ModelBuilder <RecordType extends Record <RecordType>> {
 	// properties
 
 	@Getter @Setter
-	ModelMetaSpec modelMeta;
+	RecordSpec modelMeta;
 
 	// state
 

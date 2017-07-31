@@ -1,18 +1,19 @@
 package wbs.framework.processapi;
 
+import static wbs.utils.etc.NullUtils.isNull;
 import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.etc.NumberUtils.toJavaIntegerRequired;
-import static wbs.utils.etc.NullUtils.isNull;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 
 import lombok.NonNull;
 
 import org.glassfish.grizzly.http.server.HttpServer;
 
 import wbs.framework.component.annotations.ClassSingletonDependency;
+import wbs.framework.component.annotations.LifecycleStop;
 import wbs.framework.component.annotations.NormalLifecycleSetup;
-import wbs.framework.component.annotations.NormalLifecycleTeardown;
 import wbs.framework.component.annotations.SingletonComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.component.config.WbsConfig;
@@ -100,9 +101,9 @@ class ProcessApiServer {
 
 	}
 
-	@NormalLifecycleTeardown
+	@LifecycleStop
 	public
-	void tearDown (
+	void stop (
 			@NonNull TaskLogger parentTaskLogger) {
 
 		try (
@@ -131,7 +132,15 @@ class ProcessApiServer {
 
 			try {
 
-				httpServer.shutdown ().wait ();
+				httpServer.shutdown ().get ();
+
+			} catch (ExecutionException executionException) {
+
+				taskLogger.warningFormatException (
+					executionException,
+					"Error while waiting for process API server to stop");
+
+				httpServer.shutdownNow ();
 
 			} catch (InterruptedException interruptedException) {
 

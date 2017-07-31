@@ -9,7 +9,7 @@ import wbs.framework.data.annotations.DataAttribute;
 import wbs.framework.data.annotations.DataClass;
 import wbs.framework.entity.meta.model.ModelCollectionSpec;
 import wbs.framework.entity.meta.model.ModelMetaData;
-import wbs.framework.entity.meta.model.ModelMetaSpec;
+import wbs.framework.entity.meta.model.RecordSpec;
 
 @Accessors (fluent = true)
 @Data
@@ -21,7 +21,7 @@ class AssociativeCollectionSpec
 	implements ModelCollectionSpec {
 
 	@DataAncestor
-	ModelMetaSpec model;
+	RecordSpec model;
 
 	@DataAttribute
 	String name;

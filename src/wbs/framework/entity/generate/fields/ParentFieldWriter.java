@@ -1,5 +1,6 @@
 package wbs.framework.entity.generate.fields;
 
+import static wbs.utils.collection.MapUtils.mapItemForKeyRequired;
 import static wbs.utils.etc.NullUtils.ifNull;
 import static wbs.utils.string.StringUtils.capitalise;
 import static wbs.utils.string.StringUtils.stringFormat;
@@ -70,7 +71,8 @@ class ParentFieldWriter
 		) {
 
 			PluginModelSpec fieldTypePluginModel =
-				pluginManager.pluginModelsByName ().get (
+				mapItemForKeyRequired (
+					pluginManager.pluginModelsByName (),
 					spec.typeName ());
 
 			PluginSpec fieldTypePlugin =

@@ -25,7 +25,7 @@ import wbs.framework.component.manager.ComponentProvider;
 import wbs.framework.component.scaffold.PluginSpec;
 import wbs.framework.data.tools.DataToXml;
 import wbs.framework.entity.meta.model.ModelMetaLoader;
-import wbs.framework.entity.meta.model.ModelMetaSpec;
+import wbs.framework.entity.meta.model.RecordSpec;
 import wbs.framework.entity.model.Model;
 import wbs.framework.entity.model.ModelBuilder;
 import wbs.framework.logging.LogContext;
@@ -113,7 +113,7 @@ class EntityHelperImplementation
 				ImmutableList.builder ();
 
 			for (
-				ModelMetaSpec modelMeta
+				RecordSpec modelMeta
 					: modelMetaLoader.modelMetas ().values ()
 			) {
 
@@ -228,7 +228,7 @@ class EntityHelperImplementation
 			int errors = 0;
 
 			for (
-				ModelMetaSpec modelMeta
+				RecordSpec modelMeta
 					: modelMetaLoader.modelMetas ().values ()
 			) {
 

@@ -1,6 +1,7 @@
 package wbs.framework.apiclient;
 
 import static wbs.utils.collection.ArrayUtils.arrayStream;
+import static wbs.utils.collection.MapUtils.mapContainsKey;
 import static wbs.utils.etc.EnumUtils.enumEqualSafe;
 import static wbs.utils.etc.EnumUtils.enumNotEqualSafe;
 import static wbs.utils.etc.Misc.doNothing;
@@ -20,6 +21,7 @@ import static wbs.utils.string.StringUtils.stringToUtf8;
 import static wbs.utils.string.StringUtils.utf8ToString;
 
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -60,8 +62,10 @@ import wbs.framework.logging.LogContext;
 import wbs.framework.logging.OwnedTaskLogger;
 import wbs.framework.logging.TaskLogger;
 
+import wbs.utils.io.RuntimeInterruptedIoException;
 import wbs.utils.io.RuntimeIoException;
 
+import wbs.web.exceptions.HttpClientException;
 import wbs.web.misc.UrlParams;
 
 @Accessors (fluent = true)
@@ -409,6 +413,11 @@ class GenericHttpSender <Request, Response> {
 					httpClient.execute (
 						httpRequest);
 
+			} catch (InterruptedIOException interruptedIoException) {
+
+				throw new RuntimeInterruptedIoException (
+					interruptedIoException);
+
 			} catch (IOException ioException) {
 
 				throw new RuntimeIoException (
@@ -672,23 +681,47 @@ class GenericHttpSender <Request, Response> {
 					errorMessage)
 			) {
 
-				Gson gson =
-					new GsonBuilder ().create ();
+				if (
 
-				taskLogger.errorFormat (
-					"Decode error: %s\n",
-					optionalGetRequired (
-						errorMessage),
-					"Trace: %s\n",
-					gson.toJson (
-						requestTrace),
-					"Response: %s",
-					gson.toJson (
-						responseTrace));
+					doesNotContain (
+						helper.validStatusCodes (),
+						fromJavaInteger (
+							httpResponse.getStatusLine ().getStatusCode ()))
 
-				throw new RuntimeException (
-					optionalGetRequired (
-						errorMessage));
+					&& mapContainsKey (
+						HttpClientException.exceptionClassesByStatus,
+						fromJavaInteger (
+							httpResponse.getStatusLine ().getStatusCode ()))
+
+				) {
+
+					throw HttpClientException.forStatus (
+						fromJavaInteger (
+							httpResponse.getStatusLine ().getStatusCode ()),
+						optionalGetRequired (
+							errorMessage));
+
+				} else {
+
+					Gson gson =
+						new GsonBuilder ().create ();
+
+					taskLogger.errorFormat (
+						"Decode error: %s\n",
+						optionalGetRequired (
+							errorMessage),
+						"Trace: %s\n",
+						gson.toJson (
+							requestTrace),
+						"Response: %s",
+						gson.toJson (
+							responseTrace));
+
+					throw new RuntimeException (
+						optionalGetRequired (
+							errorMessage));
+
+				}
 
 			}
 

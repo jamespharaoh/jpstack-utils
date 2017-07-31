@@ -5,6 +5,8 @@ import static wbs.utils.io.FileUtils.fileExistsFormat;
 import static wbs.utils.string.StringUtils.capitalise;
 import static wbs.utils.string.StringUtils.stringFormat;
 
+import com.google.common.collect.ImmutableList;
+
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -18,7 +20,8 @@ import wbs.framework.component.annotations.PrototypeDependency;
 import wbs.framework.component.manager.ComponentProvider;
 import wbs.framework.component.scaffold.PluginModelSpec;
 import wbs.framework.component.scaffold.PluginSpec;
-import wbs.framework.entity.meta.model.ModelMetaSpec;
+import wbs.framework.entity.meta.model.ModelInterfaceSpec;
+import wbs.framework.entity.meta.model.RecordSpec;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.OwnedTaskLogger;
 import wbs.framework.logging.TaskLogger;
@@ -52,7 +55,7 @@ class ModelInterfacesGenerator {
 	PluginModelSpec pluginModel;
 
 	@Getter @Setter
-	ModelMetaSpec modelMeta;
+	RecordSpec modelMeta;
 
 	// state
 
@@ -82,6 +85,7 @@ class ModelInterfacesGenerator {
 		) {
 
 			setup ();
+
 			findRelated ();
 
 			generateDaoInterface (
@@ -230,27 +234,34 @@ class ModelInterfacesGenerator {
 
 				if (gotDaoMethods) {
 
-					objectHelperWriter
-
-						.addInterfaceFormat (
-							"%s.model.%s",
-							plugin.packageName (),
-							daoMethodsName);
+					objectHelperWriter.addInterfaceFormat (
+						"%s.model.%s",
+						plugin.packageName (),
+						daoMethodsName);
 
 				}
 
-				objectHelperWriter
+				objectHelperWriter.addInterfaceName (
+					"wbs.framework.object.ObjectHelper",
+					ImmutableList.of (
+						stringFormat (
+							"%s.model.%s",
+							plugin.packageName (),
+							recordName)));
 
-					.addInterface (
-						imports ->
-							stringFormat (
-								"%s <%s>",
-								imports.register (
-									"wbs.framework.object.ObjectHelper"),
-								imports.registerFormat (
-									"%s.model.%s",
-									plugin.packageName (),
-									recordName)));
+				for (
+					ModelInterfaceSpec implementsInterface
+						: modelMeta ().objectHelperInterfaces ()
+				) {
+
+					objectHelperWriter.addInterfaceName (
+						stringFormat (
+							"%s.%s",
+							implementsInterface.packageName (),
+							implementsInterface.name ()),
+						implementsInterface.parameters ());
+
+				}
 
 				classUnitWriter.addBlock (
 					objectHelperWriter);
@@ -339,6 +350,20 @@ class ModelInterfacesGenerator {
 
 					.addInterfaceModifier (
 						"public");
+
+				for (
+					ModelInterfaceSpec implementsInterface
+						: modelMeta ().daoInterfaces ()
+				) {
+
+					daoWriter.addInterfaceName (
+						stringFormat (
+							"%s.%s",
+							implementsInterface.packageName (),
+							implementsInterface.name ()),
+						implementsInterface.parameters ());
+
+				}
 
 				if (gotDaoMethods) {
 

@@ -1,5 +1,6 @@
 package wbs.framework.object;
 
+import static wbs.utils.collection.CollectionUtils.singletonList;
 import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
 import static wbs.utils.etc.OptionalUtils.optionalOrNull;
 
@@ -170,6 +171,22 @@ interface ObjectHelperCodeMethods <
 				orThrow.get ();
 
 		}
+
+	}
+
+	default
+	RecordType findByCodeOrThrow (
+			Transaction parentTransaction,
+			Record <?> parent,
+			String code,
+			Supplier <? extends RuntimeException> orThrow) {
+
+		return findByCodeOrThrow (
+			parentTransaction,
+			parent,
+			singletonList (
+				code),
+			orThrow);
 
 	}
 

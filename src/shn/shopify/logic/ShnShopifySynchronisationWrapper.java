@@ -38,14 +38,15 @@ import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
 
+import wbs.integrations.shopify.apiclient.ShopifyApiClientCredentials;
+import wbs.integrations.shopify.apiclient.ShopifyApiRequestItem;
+import wbs.integrations.shopify.apiclient.ShopifyApiResponseItem;
+
 import wbs.platform.event.logic.EventLogic;
 
 import wbs.utils.random.RandomLogic;
 
 import shn.core.model.ShnDatabaseRec;
-import shn.shopify.apiclient.ShopifyApiClientCredentials;
-import shn.shopify.apiclient.ShopifyApiRequestItem;
-import shn.shopify.apiclient.ShopifyApiResponseItem;
 import shn.shopify.logic.ShnShopifySynchronisationHelper.EventType;
 import shn.shopify.model.ShnShopifyConnectionRec;
 import shn.shopify.model.ShnShopifyRecord;
@@ -403,7 +404,7 @@ class ShnShopifySynchronisationWrapper <
 				helper.eventCode (
 					EventType.remove),
 				remoteItem.id (),
-				shopifyConnection.getStore (),
+				shopifyConnection.getAccount (),
 				shopifyConnection);
 
 			synchronized (this) {
@@ -616,7 +617,7 @@ class ShnShopifySynchronisationWrapper <
 				helper.eventCode (
 					EventType.create),
 				localItem,
-				shopifyConnection.getStore (),
+				shopifyConnection.getAccount (),
 				shopifyConnection);
 
 			// verify update
@@ -892,7 +893,7 @@ class ShnShopifySynchronisationWrapper <
 					helper.eventCode (
 						EventType.update),
 					localItem,
-					shopifyConnection.getStore (),
+					shopifyConnection.getAccount (),
 					shopifyConnection);
 
 				// verify update

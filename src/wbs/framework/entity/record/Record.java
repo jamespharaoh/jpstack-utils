@@ -1,9 +1,9 @@
 package wbs.framework.entity.record;
 
 public
-interface Record<Type extends Record<Type>>
+interface Record <Type extends Record <Type>>
 	extends
-		Comparable<Record<Type>>,
+		Comparable <Record <Type>>,
 		IdObject {
 
 }

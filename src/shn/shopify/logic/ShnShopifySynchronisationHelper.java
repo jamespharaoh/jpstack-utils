@@ -8,9 +8,10 @@ import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.Record;
 import wbs.framework.object.ObjectHelper;
 
-import shn.shopify.apiclient.ShopifyApiClientCredentials;
-import shn.shopify.apiclient.ShopifyApiRequestItem;
-import shn.shopify.apiclient.ShopifyApiResponseItem;
+import wbs.integrations.shopify.apiclient.ShopifyApiClientCredentials;
+import wbs.integrations.shopify.apiclient.ShopifyApiRequestItem;
+import wbs.integrations.shopify.apiclient.ShopifyApiResponseItem;
+
 import shn.shopify.model.ShnShopifyConnectionRec;
 
 public

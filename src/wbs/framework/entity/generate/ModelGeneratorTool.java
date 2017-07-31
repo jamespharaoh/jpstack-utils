@@ -14,7 +14,7 @@ import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.component.manager.ComponentProvider;
 import wbs.framework.component.scaffold.PluginSpec;
 import wbs.framework.entity.meta.model.ModelMetaLoader;
-import wbs.framework.entity.meta.model.ModelMetaSpec;
+import wbs.framework.entity.meta.model.RecordSpec;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.OwnedTaskLogger;
 import wbs.framework.logging.TaskLogger;
@@ -64,7 +64,7 @@ class ModelGeneratorTool {
 				new StatusCounters ();
 
 			for (
-				ModelMetaSpec modelMeta
+				RecordSpec modelMeta
 					: Iterables.concat (
 						modelMetaLoader.modelMetas ().values (),
 						modelMetaLoader.componentMetas ().values ())

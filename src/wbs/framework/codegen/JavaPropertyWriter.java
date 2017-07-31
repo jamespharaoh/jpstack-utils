@@ -22,7 +22,7 @@ class JavaPropertyWriter
 
 	// properties
 
-	Function <JavaImportRegistry, String> thisClassName;
+	String thisClassName;
 	Function <JavaImportRegistry, String> typeName;
 	Function <JavaImportRegistry, String> setterTypeName;
 	String setterConversion;
@@ -34,7 +34,7 @@ class JavaPropertyWriter
 
 	public
 	JavaPropertyWriter thisClassName (
-			@NonNull Function <JavaImportRegistry, String> thisClassName) {
+			@NonNull String thisClassName) {
 
 		if (
 			isNotNull (
@@ -47,17 +47,6 @@ class JavaPropertyWriter
 			thisClassName;
 
 		return this;
-
-	}
-
-	public
-	JavaPropertyWriter thisClassName (
-			@NonNull String thisClassName) {
-
-		return thisClassName (
-			imports ->
-				imports.register (
-					thisClassName));
 
 	}
 
@@ -363,8 +352,7 @@ class JavaPropertyWriter
 
 		formatWriter.writeLineFormat (
 			"%s set%s (",
-			thisClassName.apply (
-				imports),
+			thisClassName,
 			capitalise (
 				propertyName));
 

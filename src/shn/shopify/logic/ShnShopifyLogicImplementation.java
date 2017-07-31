@@ -31,9 +31,7 @@ import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
 
 import shn.product.model.ShnProductRec;
-import shn.shopify.apiclient.ShopifyApiClientCredentials;
 import shn.shopify.model.ShnShopifyConnectionRec;
-import shn.shopify.model.ShnShopifyStoreRec;
 
 @SingletonComponent ("shnShopifyLogicImplementation")
 public
@@ -46,38 +44,6 @@ class ShnShopifyLogicImplementation
 	LogContext logContext;
 
 	// public implementation
-
-	@Override
-	public
-	ShopifyApiClientCredentials getApiCredentials (
-			@NonNull Transaction parentTransaction,
-			@NonNull ShnShopifyStoreRec shopifyStore) {
-
-		try (
-
-			NestedTransaction transaction =
-				parentTransaction.nestTransaction (
-					logContext,
-					"getCredentials");
-
-		) {
-
-			return new ShopifyApiClientCredentials ()
-
-				.storeName (
-					shopifyStore.getStoreName ())
-
-				.username (
-					shopifyStore.getApiKey ())
-
-				.password (
-					shopifyStore.getPassword ())
-
-			;
-
-		}
-
-	}
 
 	@Override
 	public

@@ -58,10 +58,10 @@ class ModelMetaLoader {
 	// properties
 
 	@Getter
-	Map <String, ModelMetaSpec> modelMetas;
+	Map <String, RecordSpec> modelMetas;
 
 	@Getter
-	Map <String, ModelMetaSpec> componentMetas;
+	Map <String, RecordSpec> componentMetas;
 
 	// state
 
@@ -138,10 +138,10 @@ class ModelMetaLoader {
 
 		) {
 
-			ImmutableMap.Builder <String, ModelMetaSpec> modelBuilder =
+			ImmutableMap.Builder <String, RecordSpec> modelBuilder =
 				ImmutableMap.builder ();
 
-			ImmutableMap.Builder <String, ModelMetaSpec> componentBuilder =
+			ImmutableMap.Builder <String, RecordSpec> componentBuilder =
 				ImmutableMap.builder ();
 
 			pluginManager.plugins ().forEach (
@@ -195,7 +195,7 @@ class ModelMetaLoader {
 	private
 	void loadModelMeta (
 			@NonNull TaskLogger parentTaskLogger,
-			@NonNull ImmutableMap.Builder <String, ModelMetaSpec> builder,
+			@NonNull ImmutableMap.Builder <String, RecordSpec> builder,
 			@NonNull PluginSpec plugin,
 			@NonNull String modelName) {
 
@@ -210,7 +210,7 @@ class ModelMetaLoader {
 
 			String resourceName =
 				stringFormat (
-					"/%s/model/%s-model.xml",
+					"/%s/model/%s-record.xml",
 					plugin.packageName ().replace ('.', '/'),
 					camelToHyphen (
 						modelName));
@@ -226,7 +226,7 @@ class ModelMetaLoader {
 				if (inputStream == null) {
 
 					taskLogger.errorFormat (
-						"Model meta not found for %s.%s: %s",
+						"Record spec not found for %s.%s: %s",
 						plugin.name (),
 						modelName,
 						resourceName);
@@ -235,12 +235,12 @@ class ModelMetaLoader {
 
 				}
 
-				ModelMetaSpec spec;
+				RecordSpec spec;
 
 				try {
 
 					spec =
-						(ModelMetaSpec)
+						(RecordSpec)
 						dataFromXml.readInputStreamRequired (
 							taskLogger,
 							inputStream,

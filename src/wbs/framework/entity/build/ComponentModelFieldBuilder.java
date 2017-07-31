@@ -20,7 +20,7 @@ import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.entity.meta.fields.ComponentFieldSpec;
 import wbs.framework.entity.meta.model.ModelMetaLoader;
-import wbs.framework.entity.meta.model.ModelMetaSpec;
+import wbs.framework.entity.meta.model.RecordSpec;
 import wbs.framework.entity.model.ModelField;
 import wbs.framework.entity.model.ModelFieldType;
 import wbs.framework.logging.LogContext;
@@ -151,7 +151,7 @@ class ComponentModelFieldBuilder
 				.fieldsByName (
 					modelField.fieldsByName ());
 
-			ModelMetaSpec componentMeta =
+			RecordSpec componentMeta =
 				modelMetaLoader.componentMetas ().get (
 					spec.typeName ());
 

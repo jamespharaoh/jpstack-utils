@@ -1,5 +1,6 @@
 package wbs.framework.codegen;
 
+import static wbs.utils.collection.CollectionUtils.collectionHasOneItem;
 import static wbs.utils.collection.CollectionUtils.listLastItemRequired;
 import static wbs.utils.collection.MapUtils.mapItemForKeyOrThrow;
 import static wbs.utils.etc.Misc.contains;
@@ -162,10 +163,25 @@ class JavaClassUnitWriter {
 				return fullClassName;
 			}
 
+			List <String> fullClassNameParts =
+				stringSplitFullStop (
+					fullClassName);
+
+			if (
+				collectionHasOneItem (
+					fullClassNameParts)
+			) {
+
+				throw new IllegalArgumentException (
+					stringFormat (
+						"Not a fully qualifed class name: %s",
+						fullClassName));
+
+			}
+
 			String simpleClassName =
 				listLastItemRequired (
-					stringSplitFullStop (
-						fullClassName));
+					fullClassNameParts);
 
 			if (
 
@@ -255,6 +271,14 @@ class JavaClassUnitWriter {
 					stringFormat (
 						"Not a fully qualified class name: %s",
 						fullClassName));
+
+			} else if (
+				contains (
+					nonImportedClassNames,
+					fullClassName)
+			) {
+
+				return fullClassName;
 
 			} else {
 

@@ -24,13 +24,14 @@ import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
 import wbs.framework.object.ObjectHelper;
 
+import wbs.integrations.shopify.apiclient.ShopifyApiClientCredentials;
+import wbs.integrations.shopify.apiclient.collect.ShopifyCollectApiClient;
+import wbs.integrations.shopify.apiclient.collect.ShopifyCollectListResponse;
+import wbs.integrations.shopify.apiclient.collect.ShopifyCollectRequest;
+import wbs.integrations.shopify.apiclient.collect.ShopifyCollectResponse;
+
 import shn.product.model.ShnProductObjectHelper;
 import shn.product.model.ShnProductRec;
-import shn.shopify.apiclient.ShopifyApiClientCredentials;
-import shn.shopify.apiclient.collect.ShopifyCollectApiClient;
-import shn.shopify.apiclient.collect.ShopifyCollectListResponse;
-import shn.shopify.apiclient.collect.ShopifyCollectRequest;
-import shn.shopify.apiclient.collect.ShopifyCollectResponse;
 import shn.shopify.model.ShnShopifyConnectionRec;
 
 @SingletonComponent ("shnShopifyProductSubCategorySynchronisationHelper")

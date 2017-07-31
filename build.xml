@@ -178,6 +178,8 @@
       <fileset dir="src/wbs/console/tab/api/files"/>
       <fileset dir="src/wbs/console/priv/api/files"/>
       <fileset dir="src/wbs/console/reporting/api/files"/>
+      <fileset dir="src/wbs/integrations/common/api/files"/>
+      <fileset dir="src/wbs/integrations/shopify/api/files"/>
       <fileset dir="src/wbs/platform/affiliate/api/files"/>
       <fileset dir="src/wbs/platform/background/api/files"/>
       <fileset dir="src/wbs/platform/core/api/files"/>
@@ -320,6 +322,8 @@
       <fileset dir="src/wbs/console/tab/files"/>
       <fileset dir="src/wbs/console/priv/files"/>
       <fileset dir="src/wbs/console/reporting/files"/>
+      <fileset dir="src/wbs/integrations/common/console/files"/>
+      <fileset dir="src/wbs/integrations/shopify/console/files"/>
       <fileset dir="src/wbs/platform/affiliate/console/files"/>
       <fileset dir="src/wbs/platform/background/console/files"/>
       <fileset dir="src/wbs/platform/core/console/files"/>

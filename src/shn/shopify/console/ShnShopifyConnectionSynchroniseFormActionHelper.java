@@ -30,18 +30,19 @@ import wbs.framework.database.NestedTransaction;
 import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
 
+import wbs.integrations.shopify.apiclient.ShopifyApiClientCredentials;
+import wbs.integrations.shopify.apiclient.ShopifyApiLogic;
+import wbs.integrations.shopify.apiclient.collect.ShopifyCollectRequest;
+import wbs.integrations.shopify.apiclient.collect.ShopifyCollectResponse;
+import wbs.integrations.shopify.apiclient.customcollection.ShopifyCustomCollectionRequest;
+import wbs.integrations.shopify.apiclient.customcollection.ShopifyCustomCollectionResponse;
+import wbs.integrations.shopify.apiclient.product.ShopifyProductRequest;
+import wbs.integrations.shopify.apiclient.product.ShopifyProductResponse;
+
 import wbs.utils.string.FormatWriter;
 
 import shn.product.model.ShnProductRec;
 import shn.product.model.ShnProductSubCategoryRec;
-import shn.shopify.apiclient.ShopifyApiClientCredentials;
-import shn.shopify.apiclient.collect.ShopifyCollectRequest;
-import shn.shopify.apiclient.collect.ShopifyCollectResponse;
-import shn.shopify.apiclient.customcollection.ShopifyCustomCollectionRequest;
-import shn.shopify.apiclient.customcollection.ShopifyCustomCollectionResponse;
-import shn.shopify.apiclient.product.ShopifyProductRequest;
-import shn.shopify.apiclient.product.ShopifyProductResponse;
-import shn.shopify.logic.ShnShopifyLogic;
 import shn.shopify.logic.ShnShopifySynchronisation;
 import shn.shopify.model.ShnShopifyConnectionRec;
 import wbs.web.responder.WebResponder;
@@ -66,7 +67,7 @@ class ShnShopifyConnectionSynchroniseFormActionHelper
 	ConsoleRequestContext requestContext;
 
 	@SingletonDependency
-	ShnShopifyLogic shopifyLogic;
+	ShopifyApiLogic shopifyApiLogic;
 
 	@SingletonDependency
 	ShnShopifyConnectionConsoleHelper shopifyConnectionHelper;
@@ -219,9 +220,9 @@ class ShnShopifyConnectionSynchroniseFormActionHelper
 					transaction);
 
 			ShopifyApiClientCredentials shopifyCredentials =
-				shopifyLogic.getApiCredentials (
+				shopifyApiLogic.getApiCredentials (
 					transaction,
-					shopifyConnection.getStore ());
+					shopifyConnection.getAccount ());
 
 			Long remainingOperations =
 				formState.maxOperations ();

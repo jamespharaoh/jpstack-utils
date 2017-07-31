@@ -18,7 +18,7 @@ import wbs.framework.database.OwnedTransaction;
 import wbs.framework.database.Transaction;
 import wbs.framework.entity.helper.EntityHelper;
 import wbs.framework.entity.meta.model.ModelMetaLoader;
-import wbs.framework.entity.meta.model.ModelMetaSpec;
+import wbs.framework.entity.meta.model.RecordSpec;
 import wbs.framework.entity.model.Model;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.OwnedTaskLogger;
@@ -47,8 +47,8 @@ class ModelFixtureCreator {
 	ComponentProvider <BuilderFactory <?, Transaction>> builderFactoryProvider;
 
 	@PrototypeDependency
-	@ModelMetaBuilderHandler
-	Map <Class <?>, ComponentProvider <Object>> modelMetaBuilderProviders;
+	Map <Class <?>, ComponentProvider <ModelFixtureBuilderComponent>>
+		modelFixtureBuilderProviders;
 
 	// state
 
@@ -101,7 +101,7 @@ class ModelFixtureCreator {
 
 				.addBuilders (
 					taskLogger,
-					modelMetaBuilderProviders)
+					modelFixtureBuilderProviders)
 
 				.create (
 					taskLogger);
@@ -129,7 +129,7 @@ class ModelFixtureCreator {
 				"About to create model fixtures");
 
 			for (
-				ModelMetaSpec spec
+				RecordSpec spec
 					: modelMetaLoader.modelMetas ().values ()
 			) {
 

@@ -1,7 +1,6 @@
 package shn.shopify.fixture;
 
 import static wbs.utils.collection.MapUtils.mapItemForKeyRequired;
-import static wbs.utils.collection.SetUtils.emptySet;
 import static wbs.utils.string.CodeUtils.simplifyToCodeRequired;
 
 import java.util.Map;
@@ -29,7 +28,6 @@ import wbs.platform.scaffold.model.SliceObjectHelper;
 import wbs.platform.scaffold.model.SliceRec;
 
 import shn.shopify.model.ShnShopifyConnectionObjectHelper;
-import shn.shopify.model.ShnShopifyStoreObjectHelper;
 
 public
 class ShnShopifyFixtureProvider
@@ -51,9 +49,6 @@ class ShnShopifyFixtureProvider
 
 	@SingletonDependency
 	ShnShopifyConnectionObjectHelper shopifyConnectionHelper;
-
-	@SingletonDependency
-	ShnShopifyStoreObjectHelper shopifyStoreHelper;
 
 	@SingletonDependency
 	SliceObjectHelper sliceHelper;
@@ -81,9 +76,6 @@ class ShnShopifyFixtureProvider
 		) {
 
 			createMenuItems (
-				transaction);
-
-			createStores (
 				transaction);
 
 			createConnections (
@@ -146,62 +138,6 @@ class ShnShopifyFixtureProvider
 	}
 
 	private
-	void createStores (
-			@NonNull Transaction parentTransaction) {
-
-		try (
-
-			NestedTransaction transaction =
-				parentTransaction.nestTransaction (
-					logContext,
-					"createStores");
-
-		) {
-
-			testAccounts.forEach (
-				"shopify-store",
-				suppliedParams -> {
-
-				SliceRec slice =
-					sliceHelper.findByCodeRequired (
-						transaction,
-						GlobalId.root,
-						mapItemForKeyRequired (
-							suppliedParams,
-							"slice"));
-
-				Map <String, String> allParams =
-					ImmutableMap.<String, String> builder ()
-
-					.putAll (
-						suppliedParams)
-
-					.put (
-						"code",
-						simplifyToCodeRequired (
-							mapItemForKeyRequired (
-								suppliedParams,
-								"name")))
-
-					.build ();
-
-				eventFixtureLogic.createRecordAndEvents (
-					transaction,
-					"SHN Shopify",
-					shopifyStoreHelper,
-					slice,
-					allParams,
-					emptySet ());
-
-			});
-
-			transaction.flush ();
-
-		}
-
-	}
-
-	private
 	void createConnections (
 			@NonNull Transaction parentTransaction) {
 
@@ -219,7 +155,7 @@ class ShnShopifyFixtureProvider
 					"slice");
 
 			testAccounts.forEach (
-				"shopify-connection",
+				"shn-shopify-connection",
 				suppliedParams -> {
 
 				SliceRec slice =
