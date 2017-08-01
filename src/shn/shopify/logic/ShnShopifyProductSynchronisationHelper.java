@@ -41,6 +41,7 @@ import wbs.framework.logging.LogContext;
 import wbs.framework.object.ObjectHelper;
 
 import wbs.integrations.shopify.apiclient.ShopifyApiClientCredentials;
+import wbs.integrations.shopify.apiclient.metafield.ShopifyMetafieldRequest;
 import wbs.integrations.shopify.apiclient.product.ShopifyProductApiClient;
 import wbs.integrations.shopify.apiclient.product.ShopifyProductImageRequest;
 import wbs.integrations.shopify.apiclient.product.ShopifyProductImageResponse;
@@ -401,7 +402,8 @@ class ShnShopifyProductSynchronisationHelper
 	ShopifyProductRequest localToRequest (
 			@NonNull Transaction parentTransaction,
 			@NonNull ShnShopifyConnectionRec connection,
-			@NonNull ShnProductRec localProduct) {
+			@NonNull ShnProductRec localProduct,
+			@NonNull Boolean create) {
 
 		try (
 
@@ -412,12 +414,13 @@ class ShnShopifyProductSynchronisationHelper
 
 		) {
 
-			return shopifyLogic.createRequest (
-				transaction,
-				connection,
-				productAttributes,
-				localProduct,
-				ShopifyProductRequest.class)
+			ShopifyProductRequest request =
+				shopifyLogic.createRequest (
+					transaction,
+					connection,
+					productAttributes,
+					localProduct,
+					ShopifyProductRequest.class)
 
 				.images (
 					shopifyLogic.createRequestCollection (
@@ -440,8 +443,11 @@ class ShnShopifyProductSynchronisationHelper
 						transaction,
 						localProduct))
 
-/*
-				.metafields (
+			;
+
+			if (create) {
+
+				request.metafields (
 					ImmutableList.of (
 
 					ShopifyMetafieldRequest.of (
@@ -454,10 +460,11 @@ class ShnShopifyProductSynchronisationHelper
 						"local-id",
 						localProduct.getId ())
 
-				))
-*/
+				));
 
-			;
+			}
+
+			return request;
 
 		}
 

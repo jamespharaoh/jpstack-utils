@@ -96,8 +96,8 @@
 					object-type="shnDatabase"/>
 
 				<object-field
-					name="store"
-					object-type="shnShopifyStore"/>
+					name="account"
+					object-type="shopifyAccount"/>
 
 				<text-area-field
 					name="productDescriptionTemplate"/>
@@ -123,8 +123,8 @@
 					object-type="shnDatabase"/>
 
 				<object-field
-					name="store"
-					object-type="shnShopifyStore"/>
+					name="account"
+					object-type="shopifyAccount"/>
 
 				<text-area-field
 					name="productDescriptionTemplate"/>

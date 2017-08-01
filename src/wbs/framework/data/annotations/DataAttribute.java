@@ -19,4 +19,7 @@ public
 	boolean required ()
 	default false;
 
+	String valueMap ()
+	default "";
+
 }

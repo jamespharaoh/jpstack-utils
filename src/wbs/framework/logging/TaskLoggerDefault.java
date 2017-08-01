@@ -226,9 +226,9 @@ interface TaskLoggerDefault
 
 	@Override
 	default
-	RealTaskLogger findRoot () {
+	RealTaskLogger getRoot () {
 
-		return realTaskLogger ().findRoot ();
+		return realTaskLogger ().getRoot ();
 
 	}
 
@@ -274,15 +274,6 @@ interface TaskLoggerDefault
 
 		return new BorrowedTaskLogger (
 			this.realTaskLogger ());
-
-	}
-
-	@Override
-	default
-	TaskLogger parallel () {
-
-		return new ParallelTaskLoggerImplementation (
-			realTaskLogger ());
 
 	}
 

@@ -9,4 +9,6 @@ interface TaskLoggerCoreMethods {
 
 	ParentTaskLogger parentTaskLogger ();
 
+	RealTaskLogger getRoot ();
+
 }

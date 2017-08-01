@@ -1,7 +1,6 @@
 package shn.shopify.logic;
 
 import static wbs.utils.collection.CollectionUtils.collectionIsEmpty;
-import static wbs.utils.collection.CollectionUtils.collectionIsNotEmpty;
 import static wbs.utils.collection.CollectionUtils.collectionSize;
 import static wbs.utils.collection.CollectionUtils.listSliceFromStart;
 import static wbs.utils.collection.IterableUtils.iterableFilter;
@@ -348,15 +347,11 @@ class ShnShopifySynchronisationWrapper <
 					collectionSize (
 						selectedRemoteItems));
 
-			selectedRemoteItems.parallelStream ()
-
-				.forEach (
-					remoteItem ->
-						removeItem (
-							transaction.parallel (),
-							remoteItem))
-
-			;
+			selectedRemoteItems.parallelStream ().forEach (
+				remoteItem ->
+					removeItem (
+						transaction,
+						remoteItem));
 
 			transaction.noticeFormat (
 				"Removed %s %s from shopify",
@@ -432,18 +427,11 @@ class ShnShopifySynchronisationWrapper <
 				"About to create %s in shopify",
 				helper.friendlyNamePlural ());
 
-			TaskLogger parallelTaskLogger =
-				transaction.parallel ();
-
-			localItems.parallelStream ()
-
-				.forEach (
-					localItem ->
-						createItem (
-							parallelTaskLogger,
-							localItem.getId ()))
-
-			;
+			localItems.parallelStream ().forEach (
+				localItem ->
+					createItem (
+						transaction,
+						localItem.getId ()));
 
 			transaction.noticeFormat (
 				"Created %s %s in shopify",
@@ -511,6 +499,7 @@ class ShnShopifySynchronisationWrapper <
 
 				// verify data
 
+				/*
 				if (
 					collectionIsNotEmpty (
 						helper.objectHelper ().hooks ().verifyData (
@@ -524,6 +513,7 @@ class ShnShopifySynchronisationWrapper <
 					return;
 
 				}
+				*/
 
 				// count and check number of operations
 
@@ -555,7 +545,8 @@ class ShnShopifySynchronisationWrapper <
 					helper.localToRequest (
 						transaction,
 						shopifyConnection,
-						localItem);
+						localItem,
+						true);
 
 			} catch (Exception exception) {
 
@@ -690,18 +681,11 @@ class ShnShopifySynchronisationWrapper <
 				"About to update %s in shopify",
 				helper.friendlyNamePlural ());
 
-			TaskLogger parallelTaskLogger =
-				transaction.parallel ();
-
-			localItems.parallelStream ()
-
-				.forEach (
-					localItem ->
-						updateItem (
-							parallelTaskLogger,
-							localItem.getId ()))
-
-			;
+			localItems.parallelStream ().forEach (
+				localItem ->
+					updateItem (
+						transaction,
+						localItem.getId ()));
 
 			transaction.noticeFormat (
 				"Updated %s %s in shopify",
@@ -789,6 +773,7 @@ class ShnShopifySynchronisationWrapper <
 
 				// verify data
 
+				/*
 				if (
 					collectionIsNotEmpty (
 						helper.objectHelper ().hooks ().verifyData (
@@ -804,6 +789,7 @@ class ShnShopifySynchronisationWrapper <
 					return;
 
 				}
+				*/
 
 				// count and check number of operations
 
@@ -829,7 +815,8 @@ class ShnShopifySynchronisationWrapper <
 					helper.localToRequest (
 						transaction,
 						shopifyConnection,
-						localItem);
+						localItem,
+						false);
 
 			} catch (Exception exception) {
 

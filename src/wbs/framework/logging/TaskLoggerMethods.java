@@ -72,8 +72,6 @@ interface TaskLoggerMethods
 	RuntimeException makeException (
 			Supplier <RuntimeException> exceptionSupplier);
 
-	RealTaskLogger findRoot ();
-
 	boolean errors ();
 
 	long errorCount ();
@@ -86,7 +84,5 @@ interface TaskLoggerMethods
 			Consumer <TaskLogger> function);
 
 	BorrowedTaskLogger borrow ();
-
-	TaskLogger parallel ();
 
 }

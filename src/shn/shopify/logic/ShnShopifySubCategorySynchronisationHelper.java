@@ -31,6 +31,7 @@ import wbs.integrations.shopify.apiclient.customcollection.ShopifyCustomCollecti
 import wbs.integrations.shopify.apiclient.customcollection.ShopifyCustomCollectionRequest;
 import wbs.integrations.shopify.apiclient.customcollection.ShopifyCustomCollectionResponse;
 import wbs.integrations.shopify.apiclient.metafield.ShopifyMetafieldApiClient;
+import wbs.integrations.shopify.apiclient.metafield.ShopifyMetafieldRequest;
 
 import shn.product.model.ShnProductSubCategoryObjectHelper;
 import shn.product.model.ShnProductSubCategoryRec;
@@ -396,7 +397,8 @@ customCollections.forEach (
 	ShopifyCustomCollectionRequest localToRequest (
 			@NonNull Transaction parentTransaction,
 			@NonNull ShnShopifyConnectionRec connection,
-			@NonNull ShnProductSubCategoryRec localSubCategory) {
+			@NonNull ShnProductSubCategoryRec localSubCategory,
+			@NonNull Boolean create) {
 
 		try (
 
@@ -407,15 +409,17 @@ customCollections.forEach (
 
 		) {
 
-			return shopifyLogic.createRequest (
-				transaction,
-				connection,
-				subCategoryAttributes,
-				localSubCategory,
-				ShopifyCustomCollectionRequest.class)
+			ShopifyCustomCollectionRequest request =
+				shopifyLogic.createRequest (
+					transaction,
+					connection,
+					subCategoryAttributes,
+					localSubCategory,
+					ShopifyCustomCollectionRequest.class);
 
-/*
-				.metafields (
+			if (create) {
+
+				request.metafields (
 					ImmutableList.of (
 
 					ShopifyMetafieldRequest.of (
@@ -428,10 +432,11 @@ customCollections.forEach (
 						"local-id",
 						localSubCategory.getId ())
 
-				))
-*/
+				));
 
-			;
+			}
+
+			return request;
 
 		}
 

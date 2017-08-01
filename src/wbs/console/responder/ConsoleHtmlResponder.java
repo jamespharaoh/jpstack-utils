@@ -533,7 +533,7 @@ class ConsoleHtmlResponder
 
 			writeTaskLog (
 				formatWriter,
-				taskLogger.findRoot ());
+				taskLogger.getRoot ());
 
 			formatWriter.decreaseIndent ();
 

@@ -258,7 +258,8 @@ class ShnShopifyProductSubCategorySynchronisationHelper
 	ShopifyCollectRequest localToRequest (
 			@NonNull Transaction parentTransaction,
 			@NonNull ShnShopifyConnectionRec connection,
-			@NonNull ShnProductRec localProduct) {
+			@NonNull ShnProductRec localProduct,
+			@NonNull Boolean create) {
 
 		try (
 

@@ -55,6 +55,9 @@ class RealTaskLoggerImplementation
 	Optional <ParentTaskLogger> parentOptional;
 
 	private final
+	RealTaskLogger rootTaskLogger;
+
+	private final
 	LogTarget logTarget;
 
 	private final
@@ -118,6 +121,12 @@ class RealTaskLoggerImplementation
 
 		this.parentOptional =
 			parentOptional;
+
+		this.rootTaskLogger =
+			optionalMapRequiredOrDefault (
+				ParentTaskLogger::getRoot,
+				parentOptional,
+				this);
 
 		this.nesting =
 			optionalMapRequiredOrDefault (
@@ -188,71 +197,57 @@ class RealTaskLoggerImplementation
 	public
 	void close () {
 
-		if (
-			isNotNull (
-				this.endTime)
-		) {
-			return;
-		}
+		synchronized (getRoot ()) {
 
-		Instant endTime =
-			Instant.now ();
+			if (
+				isNotNull (
+					this.endTime)
+			) {
+				return;
+			}
 
-		if (
-			optionalIsNotPresent (
-				parentOptional)
-		) {
+			Instant endTime =
+				Instant.now ();
 
-			loggingLogic.rootTaskEnd (
-				this);
+			if (
+				optionalIsNotPresent (
+					parentOptional)
+			) {
 
-		}
+				loggingLogic.rootTaskEnd (
+					this);
 
-		debugFormat (
-			"Task logger %s ended at %s",
-			toStringLazy (),
-			LazyString.singleton (
-				() -> endTime.toString ()));
+			}
 
-		this.endTime =
-			endTime;
+			debugFormat (
+				"Task logger %s ended at %s",
+				toStringLazy (),
+				LazyString.singleton (
+					() -> endTime.toString ()));
 
-		if (
-			longerThan (
-				new Duration (
-					this.startTime,
-					this.endTime),
-				Duration.millis (10))
-		) {
-			addToParent ();
+			this.endTime =
+				endTime;
+
+			if (
+				longerThan (
+					new Duration (
+						this.startTime,
+						this.endTime),
+					Duration.millis (10))
+			) {
+				addToParent ();
+			}
+
 		}
 
 	}
 
 	// accessors
 
-	@SuppressWarnings ("resource")
 	@Override
 	public
-	RealTaskLogger findRoot () {
-
-		RealTaskLogger currentTaskLogger =
-			this;
-
-		while (
-			optionalIsPresent (
-				currentTaskLogger.parentOptional ())
-		) {
-
-			currentTaskLogger =
-				optionalGetRequired (
-					currentTaskLogger.parentOptional ()
-				).realTaskLogger ();
-
-		}
-
-		return currentTaskLogger;
-
+	RealTaskLogger getRoot () {
+		return rootTaskLogger;
 	}
 
 	@Override
@@ -271,7 +266,11 @@ class RealTaskLoggerImplementation
 	public
 	long errorCount () {
 
-		return errorCount;
+		synchronized (getRoot ()) {
+
+			return errorCount;
+
+		}
 
 	}
 
@@ -279,8 +278,12 @@ class RealTaskLoggerImplementation
 	public
 	boolean errors () {
 
-		return moreThanZero (
-			errorCount);
+		synchronized (getRoot ()) {
+
+			return moreThanZero (
+				errorCount);
+
+		}
 
 	}
 
@@ -289,9 +292,13 @@ class RealTaskLoggerImplementation
 	void firstErrorFormat (
 			@NonNull CharSequence ... arguments) {
 
-		firstError =
-			stringFormatLazyArray (
-				arguments);
+		synchronized (getRoot ()) {
+
+			firstError =
+				stringFormatLazyArray (
+					arguments);
+
+		}
 
 	}
 
@@ -299,9 +306,13 @@ class RealTaskLoggerImplementation
 	void lastErrorFormat (
 			@NonNull String ... arguments) {
 
-		lastError =
-			stringFormatArray (
-				arguments);
+		synchronized (getRoot ()) {
+
+			lastError =
+				stringFormatArray (
+					arguments);
+
+		}
 
 	}
 
@@ -310,22 +321,26 @@ class RealTaskLoggerImplementation
 	void addChild (
 			@NonNull OwnedTaskLogger child) {
 
-		if (
-			isNotNull (
-				endTime)
-		) {
+		synchronized (getRoot ()) {
 
-			throw new IllegalStateException (
-				stringFormat (
-					"Cannot add children to closed task logger %s",
-					toString ()));
+			if (
+				isNotNull (
+					endTime)
+			) {
+
+				throw new IllegalStateException (
+					stringFormat (
+						"Cannot add children to closed task logger %s",
+						toString ()));
+
+			}
+
+			addToParent ();
+
+			events.add (
+				child);
 
 		}
-
-		addToParent ();
-
-		events.add (
-			child);
 
 	}
 
@@ -333,14 +348,18 @@ class RealTaskLoggerImplementation
 	public
 	String toString () {
 
-		return stringFormat (
-			"%s.%s (%s) (%s)",
-			staticContextName,
-			dynamicContextName,
-			joinWithCommaAndSpace (
-				dynamicContextParameters),
-			integerToDecimalString (
-				eventId));
+		synchronized (getRoot ()) {
+
+			return stringFormat (
+				"%s.%s (%s) (%s)",
+				staticContextName,
+				dynamicContextName,
+				joinWithCommaAndSpace (
+					dynamicContextParameters),
+				integerToDecimalString (
+					eventId));
+
+		}
 
 	}
 
@@ -417,25 +436,29 @@ class RealTaskLoggerImplementation
 	FatalErrorException fatalFormat (
 			@NonNull CharSequence ... arguments) {
 
-		LazyString message =
-			stringFormatLazyArray (
-				arguments);
+		synchronized (getRoot ()) {
 
-		logTarget.writeToLog (
-			this,
-			LogSeverity.fatal,
-			message,
-			optionalAbsent ());
+			LazyString message =
+				stringFormatLazyArray (
+					arguments);
 
-		events.add (
-			new TaskLogEntryEvent (
-				loggingLogic.nextEventId (),
+			logTarget.writeToLog (
+				this,
 				LogSeverity.fatal,
-				message));
+				message,
+				optionalAbsent ());
 
-		throw new FatalErrorException (
-			this,
-			message.toString ());
+			events.add (
+				new TaskLogEntryEvent (
+					loggingLogic.nextEventId (),
+					LogSeverity.fatal,
+					message));
+
+			throw new FatalErrorException (
+				this,
+				message.toString ());
+
+		}
 
 	}
 
@@ -445,27 +468,31 @@ class RealTaskLoggerImplementation
 			@NonNull Throwable throwable,
 			@NonNull CharSequence ... arguments) {
 
-		LazyString message =
-			stringFormatLazyArray (
-				arguments);
+		synchronized (getRoot ()) {
 
-		logTarget.writeToLog (
-			this,
-			LogSeverity.fatal,
-			message,
-			optionalOf (
-				throwable));
+			LazyString message =
+				stringFormatLazyArray (
+					arguments);
 
-		events.add (
-			new TaskLogEntryEvent (
-				loggingLogic.nextEventId (),
+			logTarget.writeToLog (
+				this,
 				LogSeverity.fatal,
-				message));
+				message,
+				optionalOf (
+					throwable));
 
-		throw new FatalErrorException (
-			this,
-			message.toString (),
-			throwable);
+			events.add (
+				new TaskLogEntryEvent (
+					loggingLogic.nextEventId (),
+					LogSeverity.fatal,
+					message));
+
+			throw new FatalErrorException (
+				this,
+				message.toString (),
+				throwable);
+
+		}
 
 	}
 
@@ -474,259 +501,13 @@ class RealTaskLoggerImplementation
 	void errorFormat (
 			@NonNull CharSequence ... arguments) {
 
-		writeFirstError ();
+		synchronized (getRoot ()) {
 
-		LazyString message =
-			stringFormatLazyArray (
-				arguments);
-
-		logTarget.writeToLog (
-			this,
-			LogSeverity.error,
-			message,
-			optionalAbsent ());
-
-		events.add (
-			new TaskLogEntryEvent (
-				loggingLogic.nextEventId (),
-				LogSeverity.error,
-				message));
-
-		increaseErrorCount ();
-
-	}
-
-	@Override
-	public
-	void errorFormatException (
-			@NonNull Throwable throwable,
-			@NonNull CharSequence ... arguments) {
-
-		writeFirstError ();
-
-		LazyString message =
-			stringFormatLazyArray (
-				arguments);
-
-		logTarget.writeToLog (
-			this,
-			LogSeverity.error,
-			message,
-			optionalOf (
-				throwable));
-
-		events.add (
-			new TaskLogEntryEvent (
-				loggingLogic.nextEventId (),
-				LogSeverity.error,
-				message));
-
-		increaseErrorCount ();
-
-	}
-
-	@Override
-	public
-	void warningFormat (
-			@NonNull CharSequence ... arguments) {
-
-		LazyString message =
-			stringFormatLazyArray (
-				arguments);
-
-		logTarget.writeToLog (
-			this,
-			LogSeverity.warning,
-			message,
-			optionalAbsent ());
-
-		events.add (
-			new TaskLogEntryEvent (
-				loggingLogic.nextEventId (),
-				LogSeverity.warning,
-				message));
-
-		increaseWarningCount ();
-
-	}
-
-	@Override
-	public
-	void warningFormatException (
-			@NonNull Throwable throwable,
-			@NonNull CharSequence ... arguments) {
-
-		LazyString message =
-			stringFormatLazyArray (
-				arguments);
-
-		logTarget.writeToLog (
-			this,
-			LogSeverity.warning,
-			message,
-			optionalOf (
-				throwable));
-
-		events.add (
-			new TaskLogEntryEvent (
-				loggingLogic.nextEventId (),
-				LogSeverity.warning,
-				message));
-
-		increaseWarningCount ();
-
-	}
-
-	@Override
-	public
-	void noticeFormat (
-			@NonNull CharSequence ... arguments) {
-
-		LazyString message =
-			stringFormatLazyArray (
-				arguments);
-
-		logTarget.writeToLog (
-			this,
-			LogSeverity.notice,
-			message,
-			optionalAbsent ());
-
-		events.add (
-			new TaskLogEntryEvent (
-				loggingLogic.nextEventId (),
-				LogSeverity.notice,
-				message));
-
-		increaseNoticeCount ();
-
-	}
-
-	@Override
-	public
-	void noticeFormatException (
-			@NonNull Throwable throwable,
-			@NonNull CharSequence ... arguments) {
-
-		LazyString message =
-			stringFormatLazyArray (
-				arguments);
-
-		logTarget.writeToLog (
-			this,
-			LogSeverity.notice,
-			message,
-			optionalOf (
-				throwable));
-
-		events.add (
-			new TaskLogEntryEvent (
-				loggingLogic.nextEventId (),
-				LogSeverity.notice,
-				message));
-
-		increaseNoticeCount ();
-
-	}
-
-	@Override
-	public
-	void logicFormat (
-			@NonNull CharSequence ... arguments) {
-
-		LazyString message =
-			stringFormatLazyArray (
-				arguments);
-
-		logTarget.writeToLog (
-			this,
-			LogSeverity.logic,
-			message,
-			optionalAbsent ());
-
-		events.add (
-			new TaskLogEntryEvent (
-				loggingLogic.nextEventId (),
-				LogSeverity.logic,
-				message));
-
-		increaseLogicCount ();
-
-	}
-
-	@Override
-	public
-	void debugFormat (
-			@NonNull CharSequence ... arguments) {
-
-		if (! debugEnabled ()) {
-			return;
-		}
-
-		LazyString message =
-			stringFormatLazyArray (
-				arguments);
-
-		logTarget.writeToLog (
-			this,
-			LogSeverity.debug,
-			message,
-			optionalAbsent ());
-
-		events.add (
-			new TaskLogEntryEvent (
-				loggingLogic.nextEventId (),
-				LogSeverity.debug,
-				message));
-
-		increaseDebugCount ();
-
-	}
-
-	@Override
-	public
-	void debugFormatException (
-			@NonNull Throwable throwable,
-			@NonNull CharSequence ... arguments) {
-
-		if (! debugEnabled ()) {
-			return;
-		}
-
-		LazyString message =
-			stringFormatLazyArray (
-				arguments);
-
-		logTarget.writeToLog (
-			this,
-			LogSeverity.debug,
-			message,
-			optionalOf (
-				throwable));
-
-		events.add (
-			new TaskLogEntryEvent (
-				loggingLogic.nextEventId (),
-				LogSeverity.debug,
-				message));
-
-		increaseDebugCount ();
-
-	}
-
-	@Override
-	public
-	RuntimeException makeException (
-			@NonNull Supplier <RuntimeException> exceptionSupplier) {
-
-		if (errors ()) {
+			writeFirstError ();
 
 			LazyString message =
-				stringFormatLazy (
-					"%s due to %s errors",
-					lastError,
-					integerToDecimalString (
-						errorCount));
+				stringFormatLazyArray (
+					arguments);
 
 			logTarget.writeToLog (
 				this,
@@ -740,12 +521,298 @@ class RealTaskLoggerImplementation
 					LogSeverity.error,
 					message));
 
-			throw exceptionSupplier.get ();
+			increaseErrorCount ();
 
-		} else {
+		}
 
-			return new RuntimeException (
-				"No errors");
+	}
+
+	@Override
+	public
+	void errorFormatException (
+			@NonNull Throwable throwable,
+			@NonNull CharSequence ... arguments) {
+
+		synchronized (getRoot ()) {
+
+			writeFirstError ();
+
+			LazyString message =
+				stringFormatLazyArray (
+					arguments);
+
+			logTarget.writeToLog (
+				this,
+				LogSeverity.error,
+				message,
+				optionalOf (
+					throwable));
+
+			events.add (
+				new TaskLogEntryEvent (
+					loggingLogic.nextEventId (),
+					LogSeverity.error,
+					message));
+
+			increaseErrorCount ();
+
+		}
+
+	}
+
+	@Override
+	public
+	void warningFormat (
+			@NonNull CharSequence ... arguments) {
+
+		synchronized (getRoot ()) {
+
+			LazyString message =
+				stringFormatLazyArray (
+					arguments);
+
+			logTarget.writeToLog (
+				this,
+				LogSeverity.warning,
+				message,
+				optionalAbsent ());
+
+			events.add (
+				new TaskLogEntryEvent (
+					loggingLogic.nextEventId (),
+					LogSeverity.warning,
+					message));
+
+			increaseWarningCount ();
+
+		}
+
+	}
+
+	@Override
+	public
+	void warningFormatException (
+			@NonNull Throwable throwable,
+			@NonNull CharSequence ... arguments) {
+
+		synchronized (getRoot ()) {
+
+			LazyString message =
+				stringFormatLazyArray (
+					arguments);
+
+			logTarget.writeToLog (
+				this,
+				LogSeverity.warning,
+				message,
+				optionalOf (
+					throwable));
+
+			events.add (
+				new TaskLogEntryEvent (
+					loggingLogic.nextEventId (),
+					LogSeverity.warning,
+					message));
+
+			increaseWarningCount ();
+
+		}
+
+	}
+
+	@Override
+	public
+	void noticeFormat (
+			@NonNull CharSequence ... arguments) {
+
+		synchronized (getRoot ()) {
+
+			LazyString message =
+				stringFormatLazyArray (
+					arguments);
+
+			logTarget.writeToLog (
+				this,
+				LogSeverity.notice,
+				message,
+				optionalAbsent ());
+
+			events.add (
+				new TaskLogEntryEvent (
+					loggingLogic.nextEventId (),
+					LogSeverity.notice,
+					message));
+
+			increaseNoticeCount ();
+
+		}
+
+	}
+
+	@Override
+	public
+	void noticeFormatException (
+			@NonNull Throwable throwable,
+			@NonNull CharSequence ... arguments) {
+
+		synchronized (getRoot ()) {
+
+			LazyString message =
+				stringFormatLazyArray (
+					arguments);
+
+			logTarget.writeToLog (
+				this,
+				LogSeverity.notice,
+				message,
+				optionalOf (
+					throwable));
+
+			events.add (
+				new TaskLogEntryEvent (
+					loggingLogic.nextEventId (),
+					LogSeverity.notice,
+					message));
+
+			increaseNoticeCount ();
+
+		}
+
+	}
+
+	@Override
+	public
+	void logicFormat (
+			@NonNull CharSequence ... arguments) {
+
+		synchronized (getRoot ()) {
+
+			LazyString message =
+				stringFormatLazyArray (
+					arguments);
+
+			logTarget.writeToLog (
+				this,
+				LogSeverity.logic,
+				message,
+				optionalAbsent ());
+
+			events.add (
+				new TaskLogEntryEvent (
+					loggingLogic.nextEventId (),
+					LogSeverity.logic,
+					message));
+
+			increaseLogicCount ();
+
+		}
+
+	}
+
+	@Override
+	public
+	void debugFormat (
+			@NonNull CharSequence ... arguments) {
+
+		synchronized (getRoot ()) {
+
+			if (! debugEnabled ()) {
+				return;
+			}
+
+			LazyString message =
+				stringFormatLazyArray (
+					arguments);
+
+			logTarget.writeToLog (
+				this,
+				LogSeverity.debug,
+				message,
+				optionalAbsent ());
+
+			events.add (
+				new TaskLogEntryEvent (
+					loggingLogic.nextEventId (),
+					LogSeverity.debug,
+					message));
+
+			increaseDebugCount ();
+
+		}
+
+	}
+
+	@Override
+	public
+	void debugFormatException (
+			@NonNull Throwable throwable,
+			@NonNull CharSequence ... arguments) {
+
+		synchronized (getRoot ()) {
+
+			if (! debugEnabled ()) {
+				return;
+			}
+
+			LazyString message =
+				stringFormatLazyArray (
+					arguments);
+
+			logTarget.writeToLog (
+				this,
+				LogSeverity.debug,
+				message,
+				optionalOf (
+					throwable));
+
+			events.add (
+				new TaskLogEntryEvent (
+					loggingLogic.nextEventId (),
+					LogSeverity.debug,
+					message));
+
+			increaseDebugCount ();
+
+		}
+
+	}
+
+	@Override
+	public
+	RuntimeException makeException (
+			@NonNull Supplier <RuntimeException> exceptionSupplier) {
+
+		synchronized (getRoot ()) {
+
+			if (errors ()) {
+
+				LazyString message =
+					stringFormatLazy (
+						"%s due to %s errors",
+						lastError,
+						integerToDecimalString (
+							errorCount));
+
+				logTarget.writeToLog (
+					this,
+					LogSeverity.error,
+					message,
+					optionalAbsent ());
+
+				events.add (
+					new TaskLogEntryEvent (
+						loggingLogic.nextEventId (),
+						LogSeverity.error,
+						message));
+
+				throw exceptionSupplier.get ();
+
+			} else {
+
+				return new RuntimeException (
+					"No errors");
+
+			}
 
 		}
 
@@ -755,29 +822,33 @@ class RealTaskLoggerImplementation
 	public
 	RuntimeException makeException () {
 
-		if (errors ()) {
+		synchronized (getRoot ()) {
 
-			LazyString message =
-				stringFormatLazy (
-					"%s due to %s errors",
-					lastError,
-					integerToDecimalString (
-						errorCount));
+			if (errors ()) {
 
-			logTarget.writeToLog (
-				this,
-				LogSeverity.error,
-				message,
-				optionalAbsent ());
+				LazyString message =
+					stringFormatLazy (
+						"%s due to %s errors",
+						lastError,
+						integerToDecimalString (
+							errorCount));
 
-			throw new LoggedErrorsException (
-				this,
-				message.toString ());
+				logTarget.writeToLog (
+					this,
+					LogSeverity.error,
+					message,
+					optionalAbsent ());
 
-		} else {
+				throw new LoggedErrorsException (
+					this,
+					message.toString ());
 
-			return new RuntimeException (
-				"No errors");
+			} else {
+
+				return new RuntimeException (
+					"No errors");
+
+			}
 
 		}
 
@@ -814,44 +885,48 @@ class RealTaskLoggerImplementation
 	public
 	void writeFirstError () {
 
-		// recurse up through parents
+		synchronized (getRoot ()) {
 
-		if (
-			optionalIsPresent (
-				parentOptional)
-		) {
+			// recurse up through parents
 
-			parentOptional.get ().writeFirstError ();
+			if (
+				optionalIsPresent (
+					parentOptional)
+			) {
 
-		}
+				parentOptional.get ().writeFirstError ();
 
-		if (
+			}
 
-			equalToZero (
-				errorCount)
+			if (
 
-			&& isNotNull (
-				firstError)
+				equalToZero (
+					errorCount)
 
-		) {
+				&& isNotNull (
+					firstError)
 
-			// add to parent if we didn't already
+			) {
 
-			addToParent ();
+				// add to parent if we didn't already
 
-			// write first error
+				addToParent ();
 
-			logTarget.writeToLog (
-				this,
-				LogSeverity.error,
-				firstError,
-				optionalAbsent ());
+				// write first error
 
-			events.add (
-				new TaskLogEntryEvent (
-					loggingLogic.nextEventId (),
+				logTarget.writeToLog (
+					this,
 					LogSeverity.error,
-					firstError));
+					firstError,
+					optionalAbsent ());
+
+				events.add (
+					new TaskLogEntryEvent (
+						loggingLogic.nextEventId (),
+						LogSeverity.error,
+						firstError));
+
+			}
 
 		}
 
@@ -861,11 +936,15 @@ class RealTaskLoggerImplementation
 	public
 	void increaseErrorCount () {
 
-		errorCount ++;
+		synchronized (getRoot ()) {
 
-		optionalDo (
-			parentOptional,
-			ParentTaskLogger::increaseErrorCount);
+			errorCount ++;
+
+			optionalDo (
+				parentOptional,
+				ParentTaskLogger::increaseErrorCount);
+
+		}
 
 	}
 
@@ -873,11 +952,15 @@ class RealTaskLoggerImplementation
 	public
 	void increaseWarningCount () {
 
-		warningCount ++;
+		synchronized (getRoot ()) {
 
-		optionalDo (
-			parentOptional,
-			ParentTaskLogger::increaseWarningCount);
+			warningCount ++;
+
+			optionalDo (
+				parentOptional,
+				ParentTaskLogger::increaseWarningCount);
+
+		}
 
 	}
 
@@ -885,11 +968,15 @@ class RealTaskLoggerImplementation
 	public
 	void increaseNoticeCount () {
 
-		noticeCount ++;
+		synchronized (getRoot ()) {
 
-		optionalDo (
-			parentOptional,
-			ParentTaskLogger::increaseNoticeCount);
+			noticeCount ++;
+
+			optionalDo (
+				parentOptional,
+				ParentTaskLogger::increaseNoticeCount);
+
+		}
 
 	}
 
@@ -897,11 +984,15 @@ class RealTaskLoggerImplementation
 	public
 	void increaseLogicCount () {
 
-		logicCount ++;
+		synchronized (getRoot ()) {
 
-		optionalDo (
-			parentOptional,
-			ParentTaskLogger::increaseLogicCount);
+			logicCount ++;
+
+			optionalDo (
+				parentOptional,
+				ParentTaskLogger::increaseLogicCount);
+
+		}
 
 	}
 
@@ -909,32 +1000,40 @@ class RealTaskLoggerImplementation
 	public
 	void increaseDebugCount () {
 
-		debugCount ++;
+		synchronized (getRoot ()) {
 
-		optionalDo (
-			parentOptional,
-			ParentTaskLogger::increaseDebugCount);
+			debugCount ++;
+
+			optionalDo (
+				parentOptional,
+				ParentTaskLogger::increaseDebugCount);
+
+		}
 
 	}
 
 	private
 	void addToParent () {
 
-		if (addedToParent) {
-			return;
+		synchronized (getRoot ()) {
+
+			if (addedToParent) {
+				return;
+			}
+
+			if (
+				optionalIsPresent (
+					parentOptional)
+			) {
+
+				parentOptional.get ().addChild (
+					this);
+
+			}
+
+			addedToParent = true;
+
 		}
-
-		if (
-			optionalIsPresent (
-				parentOptional)
-		) {
-
-			parentOptional.get ().addChild (
-				this);
-
-		}
-
-		addedToParent = true;
 
 	}
 
@@ -971,24 +1070,28 @@ class RealTaskLoggerImplementation
 	public
 	String eventText () {
 
-		Instant endTime =
-			ifNull (
-				this.endTime,
-				Instant.now ());
+		synchronized (getRoot ()) {
 
-		return stringFormat (
-			"%s.%s (%s) — %s (%s)",
-			staticContextName,
-			dynamicContextName,
-			joinWithCommaAndSpace (
-				dynamicContextParameters),
-			objectToString (
-				new Duration (
-					startTime,
-					endTime)),
-			this.endTime != null
-				? "complete"
-				: "ongoing");
+			Instant endTime =
+				ifNull (
+					this.endTime,
+					Instant.now ());
+
+			return stringFormat (
+				"%s.%s (%s) — %s (%s)",
+				staticContextName,
+				dynamicContextName,
+				joinWithCommaAndSpace (
+					dynamicContextParameters),
+				objectToString (
+					new Duration (
+						startTime,
+						endTime)),
+				this.endTime != null
+					? "complete"
+					: "ongoing");
+
+		}
 
 	}
 
@@ -1012,8 +1115,12 @@ class RealTaskLoggerImplementation
 	public
 	List <TaskLogEvent> eventChildren () {
 
-		return ImmutableList.copyOf (
-			events);
+		synchronized (getRoot ()) {
+
+			return ImmutableList.copyOf (
+				events);
+
+		}
 
 	}
 

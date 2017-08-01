@@ -1,5 +1,6 @@
 package wbs.framework.data.tools;
 
+import static wbs.utils.etc.Misc.toEnumGeneric;
 import static wbs.utils.etc.NullUtils.ifNull;
 import static wbs.utils.etc.NullUtils.isNotNull;
 import static wbs.utils.etc.OptionalUtils.optionalOf;
@@ -12,6 +13,7 @@ import static wbs.utils.etc.ResultUtils.successResultPresent;
 import static wbs.utils.etc.TypeUtils.classEqualSafe;
 import static wbs.utils.etc.TypeUtils.classInstantiate;
 import static wbs.utils.etc.TypeUtils.classNameSimple;
+import static wbs.utils.etc.TypeUtils.isSubclassOf;
 import static wbs.utils.string.StringUtils.nullIfEmptyString;
 import static wbs.utils.string.StringUtils.stringFormat;
 
@@ -97,6 +99,7 @@ class DataFromJson {
 
 		Either <Optional <Object>, String> nativeValueResult =
 			fromJsonSimple (
+				dataAttribute,
 				field.getType (),
 				jsonValue);
 
@@ -248,6 +251,7 @@ class DataFromJson {
 
 	private <Data>
 	Either <Optional <Object>, String> fromJsonSimple (
+			@NonNull DataAttribute dataAttribute,
 			@NonNull Class <?> targetType,
 			@NonNull JsonElement jsonElement) {
 
@@ -311,6 +315,17 @@ class DataFromJson {
 
 				return successResultPresent (
 					jsonPrimitive.getAsDouble ());
+
+			} else if (
+				isSubclassOf (
+					Enum.class,
+					targetType)
+			) {
+
+				return successResultPresent (
+					toEnumGeneric (
+						targetType,
+						jsonPrimitive.getAsString ()));
 
 			}
 

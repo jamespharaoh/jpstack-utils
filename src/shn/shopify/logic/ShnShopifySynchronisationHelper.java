@@ -53,7 +53,8 @@ interface ShnShopifySynchronisationHelper <
 	Request localToRequest (
 			Transaction parentTransaction,
 			ShnShopifyConnectionRec connection,
-			Local localItem);
+			Local localItem,
+			Boolean create);
 
 	void removeItem (
 			Transaction parentTransaction,
