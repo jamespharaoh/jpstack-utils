@@ -782,6 +782,10 @@ writeBuildFile world = do
 				sattr "classpathref" "classpath",
 				sattr "failonerror" "true"
 			] [
+
+				makeSysProperty "log4j2.disable.jmx" "true",
+				makeSysProperty "log4j.configurationFile" "src/log4j2.xml",
+
 				makeArgValue "wbs-test",
 				makeArgValue "wbs.test",
 				makeArgValue (
@@ -790,6 +794,7 @@ writeBuildFile world = do
 				makeArgValue "",
 				makeArgValue "wbs.platform.daemon.DaemonRunner",
 				makeArgValue "runDaemon"
+
 			]
 
 		]
@@ -803,6 +808,10 @@ writeBuildFile world = do
 				sattr "classpathref" "classpath",
 				sattr "failonerror" "true"
 			] [
+
+				makeSysProperty "log4j2.disable.jmx" "true",
+				makeSysProperty "log4j.configurationFile" "src/log4j2.xml",
+
 				makeArgValue "wbs-test",
 				makeArgValue "wbs.test",
 				makeArgValue (
@@ -811,6 +820,7 @@ writeBuildFile world = do
 				makeArgValue "",
 				makeArgValue "wbs.platform.daemon.DaemonRunner",
 				makeArgValue "runDaemon"
+
 			]
 
 		]
@@ -1016,6 +1026,7 @@ writeBuildFile world = do
 					sattr "failonerror" "true"
 				] [
 					makeSysProperty "log4j2.disable.jmx" "true",
+					makeSysProperty "log4j.configurationFile" "src/log4j2.xml",
 					makeArgValue "wbs-test",
 					makeArgValue "wbs.test",
 					makeArgValue (
@@ -1042,6 +1053,7 @@ writeBuildFile world = do
 					sattr "failonerror" "true"
 				] [
 					makeSysProperty "log4j2.disable.jmx" "true",
+					makeSysProperty "log4j.configurationFile" "src/log4j2.xml",
 					makeArgValue "wbs-test",
 					makeArgValue "wbs.test",
 					makeArgValue ("utils,config,data,entity,schema,sql," ++
@@ -1063,6 +1075,7 @@ writeBuildFile world = do
 					sattr "failonerror" "true"
 				] [
 					makeSysProperty "log4j2.disable.jmx" "true",
+					makeSysProperty "log4j.configurationFile" "src/log4j2.xml",
 					makeArgValue "wbs-test",
 					makeArgValue "wbs.test",
 					makeArgValue ("utils,config,data,entity,schema,sql," ++
