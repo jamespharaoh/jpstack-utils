@@ -6,6 +6,7 @@ import static wbs.utils.etc.LogicUtils.booleanToYesNo;
 import static wbs.utils.etc.Misc.doNothing;
 import static wbs.utils.etc.NullUtils.isNotNull;
 import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
+import static wbs.web.utils.HttpTimeUtils.httpTimestampString;
 
 import java.util.Map;
 import java.util.Set;
@@ -29,7 +30,6 @@ import wbs.framework.logging.OwnedTaskLogger;
 import wbs.framework.logging.TaskLogger;
 
 import wbs.utils.string.FormatWriter;
-import wbs.utils.time.TimeFormatter;
 
 import wbs.web.responder.BufferedTextResponder;
 
@@ -50,10 +50,6 @@ class ConsoleHtmlResponder
 	@SingletonDependency
 	private
 	ConsoleRequestContext requestContext;
-
-	@SingletonDependency
-	private
-	TimeFormatter timeFormatter;
 
 	// details
 
@@ -136,7 +132,7 @@ class ConsoleHtmlResponder
 
 			requestContext.setHeader (
 				"Expiry",
-				timeFormatter.httpTimestampString (
+				httpTimestampString (
 					transaction.now ()));
 
 		}

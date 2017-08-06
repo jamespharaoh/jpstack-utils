@@ -84,7 +84,10 @@
 
 				<interval-field
 					name="startTime"
-					nullable="yes"/>
+					nullable="yes"
+					format="timestamp-timezone-minute"
+					formatter="shopping-nation"
+					timezone="type.database.timezone"/>
 
 			</columns>
 
@@ -113,14 +116,20 @@
 			<columns>
 
 				<parent-field root="type.database"/>
-				<code-field/>
+				<code-field pattern="[A-Z]+[0-9]+"/>
 				<description-field/>
 
 				<timestamp-field
-					name="startTime"/>
+					name="startTime"
+					format="timestamp-timezone-minute"
+					formatter="shopping-nation"
+					timezone="type.database.timezone"/>
 
 				<timestamp-field
-					name="endTime"/>
+					name="endTime"
+					format="timestamp-timezone-minute"
+					formatter="shopping-nation"
+					timezone="type.database.timezone"/>
 
 			</columns>
 
@@ -140,10 +149,16 @@
 				<deleted-field/>
 
 				<timestamp-field
-					name="startTime"/>
+					name="startTime"
+					format="timestamp-timezone-minute"
+					formatter="shopping-nation"
+					timezone="type.database.timezone"/>
 
 				<timestamp-field
-					name="endTime"/>
+					name="endTime"
+					format="timestamp-timezone-minute"
+					formatter="shopping-nation"
+					timezone="type.database.timezone"/>
 
 			</columns>
 
@@ -157,15 +172,21 @@
 			<columns>
 
 				<parent-field root="type.database"/>
-				<code-field/>
+				<code-field pattern="[A-Z]+[0-9]+"/>
 				<description-field/>
 				<deleted-field/>
 
 				<timestamp-field
-					name="startTime"/>
+					name="startTime"
+					format="timestamp-timezone-minute"
+					formatter="shopping-nation"
+					timezone="type.database.timezone"/>
 
 				<timestamp-field
-					name="endTime"/>
+					name="endTime"
+					format="timestamp-timezone-minute"
+					formatter="shopping-nation"
+					timezone="type.database.timezone"/>
 
 			</columns>
 

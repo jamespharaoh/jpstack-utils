@@ -11,7 +11,9 @@ import java.util.Map;
 
 import com.google.common.base.Optional;
 
+import lombok.Getter;
 import lombok.NonNull;
+import lombok.Setter;
 
 import org.joda.time.LocalDate;
 
@@ -19,12 +21,11 @@ import wbs.console.forms.types.FormFieldInterfaceMapping;
 
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
-import wbs.framework.component.annotations.SingletonDependency;
 import wbs.framework.database.NestedTransaction;
 import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
 
-import wbs.utils.time.TimeFormatter;
+import wbs.utils.time.core.TimeFormatter;
 
 import fj.data.Either;
 
@@ -38,7 +39,9 @@ class DateFormFieldInterfaceMapping <Container>
 	@ClassSingletonDependency
 	LogContext logContext;
 
-	@SingletonDependency
+	// properties
+
+	@Getter @Setter
 	TimeFormatter timeFormatter;
 
 	// implementation
@@ -72,7 +75,7 @@ class DateFormFieldInterfaceMapping <Container>
 			// format date
 
 			return successResultPresent (
-				timeFormatter.dateString (
+				timeFormatter.dateStringShort (
 					genericValue.get ()));
 
 		}
@@ -115,7 +118,7 @@ class DateFormFieldInterfaceMapping <Container>
 			// parse date
 
 			Optional <LocalDate> genericValue =
-				timeFormatter.dateStringToLocalDate (
+				timeFormatter.dateParse (
 					interfaceValue.get ());
 
 			if (

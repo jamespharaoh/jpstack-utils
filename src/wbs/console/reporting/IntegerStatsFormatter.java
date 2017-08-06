@@ -6,6 +6,7 @@ import static wbs.utils.etc.NullUtils.isNull;
 import static wbs.utils.etc.NumberUtils.equalToZero;
 import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.string.StringUtils.emptyStringIfNull;
+import static wbs.utils.time.TimeUtils.isoTimestampString;
 import static wbs.web.utils.HtmlTableUtils.htmlTableCellClose;
 
 import java.util.LinkedHashMap;
@@ -28,7 +29,6 @@ import wbs.framework.component.annotations.SingletonDependency;
 
 import wbs.utils.string.FormatWriter;
 import wbs.utils.string.StringSubstituter;
-import wbs.utils.time.TimeFormatter;
 
 import wbs.web.misc.UrlParams;
 
@@ -42,9 +42,6 @@ class IntegerStatsFormatter
 
 	@SingletonDependency
 	ConsoleRequestContext requestContext;
-
-	@SingletonDependency
-	TimeFormatter timeFormatter;
 
 	// properties
 
@@ -137,7 +134,7 @@ class IntegerStatsFormatter
 
 				.param (
 					"interval",
-					timeFormatter.timestampHourStringIso (
+					isoTimestampString (
 						instant));
 
 			targetParams.entrySet ().stream ()

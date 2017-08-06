@@ -4,7 +4,6 @@ import com.google.common.base.Optional;
 
 import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
-import org.joda.time.Instant;
 import org.joda.time.ReadableDuration;
 import org.joda.time.ReadableInstant;
 
@@ -59,10 +58,6 @@ interface ConsoleUserHelper {
 				endTime));
 
 	}
-
-	Instant timestampStringToInstant (
-			Transaction parentTransaction,
-			String string);
 
 	String timezoneString (
 			Transaction parentTransaction,

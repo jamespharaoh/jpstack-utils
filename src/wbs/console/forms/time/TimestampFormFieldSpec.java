@@ -28,23 +28,20 @@ class TimestampFormFieldSpec
 	String label;
 
 	@DataAttribute
-	Boolean nullable;
+	TimestampFormFieldFormat format;
 
-	@DataAttribute
-	Boolean readOnly;
+	@DataAttribute (
+		name = "formatter")
+	String formatterName;
 
 	@DataAttribute (
 		name = "timezone")
 	String timezonePath;
 
 	@DataAttribute
-	Format format;
+	Boolean nullable;
 
-	public static
-	enum Format {
-		timestamp,
-		date,
-		time;
-	}
+	@DataAttribute
+	Boolean readOnly;
 
 }

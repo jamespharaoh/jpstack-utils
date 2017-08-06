@@ -13,7 +13,7 @@
 		<parent-field
 			type="slice"/>
 
-		<code-field/>a
+		<code-field/>
 
 		<!-- details -->
 
@@ -26,6 +26,10 @@
 		<reference-field
 			name="currency"
 			type="currency"
+			nullable="yes"/>
+
+		<string-field
+			name="timezone"
 			nullable="yes"/>
 
 	</fields>

@@ -126,6 +126,7 @@
 		<component class="time.DateFormFieldNativeMapping"/>
 		<component class="time.DurationFormFieldBuilder"/>
 		<component class="time.DurationFormFieldInterfaceMapping"/>
+		<component class="time.InstantFormFieldNativeMapping"/>
 		<component class="time.IntervalFormFieldBuilder"/>
 		<component class="time.IntervalFormFieldInterfaceMapping"/>
 		<component class="time.IntervalFormFieldNativeMapping"/>
@@ -137,10 +138,6 @@
 		<component class="time.TimestampFormFieldInterfaceMapping"/>
 		<component class="time.TimestampFromFormFieldBuilder"/>
 		<component class="time.TimestampFromFormFieldInterfaceMapping"/>
-		<component class="time.TimestampTimezoneFormFieldBuilder"/>
-		<component class="time.TimestampTimezoneFormFieldInterfaceMapping"/>
-		<component class="time.TimestampTimezoneFormFieldSpec"/>
-		<component class="time.TimestampTimezonePairFormFieldNativeMapping"/>
 		<component class="time.TimestampToFormFieldBuilder"/>
 		<component class="time.TimestampToFormFieldInterfaceMapping"/>
 		<component class="time.TimezoneFormFieldBuilder"/>

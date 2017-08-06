@@ -31,7 +31,7 @@ import wbs.framework.database.NestedTransaction;
 import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
 
-import wbs.utils.time.TextualInterval;
+import wbs.utils.time.interval.TextualInterval;
 
 import fj.data.Either;
 

@@ -56,7 +56,7 @@ import wbs.framework.logging.OwnedTaskLogger;
 import wbs.framework.logging.TaskLogger;
 
 import wbs.utils.etc.PropertyUtils;
-import wbs.utils.time.TextualInterval;
+import wbs.utils.time.interval.TextualInterval;
 
 @SuppressWarnings ({ "rawtypes", "unchecked" })
 @PrototypeComponent ("intervalFormFieldBuilder")

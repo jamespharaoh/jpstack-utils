@@ -350,7 +350,12 @@ writeBuildFile world = do
 	let makeCleanTargets =
 		[
 			makeSimpleTarget "clean" [
+				makeDeleteDirContents "work/api",
+				makeDeleteDirContents "work/api-test",
+				makeDeleteDirContents "work/console",
+				makeDeleteDirContents "work/console-test",
 				makeDeleteDirContents "work/bin",
+				makeDeleteDirContents "work/daemon",
 				makeDeleteDirContents "work/generated",
 				makeDeleteDirContents "work/test"
 			]

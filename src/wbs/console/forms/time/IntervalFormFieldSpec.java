@@ -18,13 +18,24 @@ class IntervalFormFieldSpec
 	implements ConsoleSpec {
 
 	@DataAttribute
-	String label;
-
-	@DataAttribute
 	String name;
 
 	@DataAttribute
 	String fieldName;
+
+	@DataAttribute
+	String label;
+
+	@DataAttribute
+	TimestampFormFieldFormat format;
+
+	@DataAttribute (
+		name = "formatter")
+	String formatterName;
+
+	@DataAttribute (
+		name = "timezone")
+	String timezonePath;
 
 	@DataAttribute
 	Boolean nullable;

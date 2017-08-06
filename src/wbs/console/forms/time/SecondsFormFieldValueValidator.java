@@ -19,7 +19,7 @@ import wbs.console.forms.types.FormFieldValueValidator;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
 
-import wbs.utils.time.DurationFormatter;
+import wbs.utils.time.duration.DurationFormatter;
 
 @Accessors (fluent = true)
 @PrototypeComponent ("secondsFormFieldInterfaceMapping")

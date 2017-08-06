@@ -27,7 +27,7 @@ import wbs.framework.database.NestedTransaction;
 import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
 
-import wbs.utils.time.DurationFormatter;
+import wbs.utils.time.duration.DurationFormatter;
 
 import fj.data.Either;
 
@@ -143,14 +143,14 @@ class DurationFormFieldInterfaceMapping <Container>
 				case textual:
 
 					return successResultPresent (
-						durationFormatter.durationToStringTextual (
+						durationFormatter.durationStringExact (
 							optionalGetRequired (
 								genericValue)));
 
 				case numeric:
 
 					return successResultPresent (
-						durationFormatter.durationToStringNumeric (
+						durationFormatter.durationStringNumeric (
 							optionalGetRequired (
 								genericValue)));
 

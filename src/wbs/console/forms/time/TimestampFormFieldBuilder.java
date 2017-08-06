@@ -13,6 +13,7 @@ import java.util.List;
 
 import lombok.NonNull;
 
+import org.joda.time.DateTime;
 import org.joda.time.Instant;
 
 import wbs.console.forms.basic.IdentityFormFieldNativeMapping;
@@ -50,6 +51,8 @@ import wbs.framework.logging.OwnedTaskLogger;
 import wbs.framework.logging.TaskLogger;
 
 import wbs.utils.etc.PropertyUtils;
+import wbs.utils.time.core.TimeFormatter;
+import wbs.utils.time.core.TimeFormatterManager;
 
 @SuppressWarnings ({ "rawtypes", "unchecked" })
 @PrototypeComponent ("timestampFormFieldBuilder")
@@ -65,6 +68,9 @@ class TimestampFormFieldBuilder
 	@ClassSingletonDependency
 	LogContext logContext;
 
+	@SingletonDependency
+	TimeFormatterManager timeFormatterManager;
+
 	// prototype dependencies
 
 	@PrototypeDependency
@@ -78,6 +84,10 @@ class TimestampFormFieldBuilder
 	@PrototypeDependency
 	ComponentProvider <IdentityFormFieldNativeMapping>
 		identityFormFieldNativeMappingProvider;
+
+	@PrototypeDependency
+	ComponentProvider <InstantFormFieldNativeMapping>
+		instantFormFieldNativeMappingProvider;
 
 	@PrototypeDependency
 	ComponentProvider <NullFormFieldConstraintValidator>
@@ -157,10 +167,16 @@ class TimestampFormFieldBuilder
 					spec.nullable (),
 					false);
 
-			TimestampFormFieldSpec.Format format =
+			TimestampFormFieldFormat format =
 				ifNull (
 					spec.format (),
-					TimestampFormFieldSpec.Format.timestamp);
+					TimestampFormFieldFormat.timestampTimezoneSecond);
+
+			TimeFormatter timeFormatter =
+				timeFormatterManager.forNameRequired (
+					ifNull (
+						spec.formatterName (),
+						"default"));
 
 			// accessor
 
@@ -201,10 +217,16 @@ class TimestampFormFieldBuilder
 
 			ConsoleFormNativeMapping nativeMapping;
 
-			if (propertyClass == Instant.class) {
+			if (propertyClass == DateTime.class) {
 
 				nativeMapping =
 					identityFormFieldNativeMappingProvider.provide (
+						taskLogger);
+
+			} else if (propertyClass == Instant.class) {
+
+				nativeMapping =
+					instantFormFieldNativeMappingProvider.provide (
 						taskLogger);
 
 			} else if (propertyClass == Date.class) {
@@ -256,6 +278,9 @@ class TimestampFormFieldBuilder
 
 				.format (
 					format)
+
+				.timeFormatter (
+					timeFormatter)
 
 				.timezonePath (
 					spec.timezonePath ())

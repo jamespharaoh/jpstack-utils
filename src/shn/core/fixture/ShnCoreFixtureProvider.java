@@ -227,6 +227,9 @@ class ShnCoreFixtureProvider
 				.setCurrency (
 					currency)
 
+				.setTimezone (
+					"Europe/London")
+
 			);
 
 			eventFixtureLogic.createEvents (
@@ -251,6 +254,10 @@ class ShnCoreFixtureProvider
 				.put (
 					"currency",
 					currency)
+
+				.put (
+					"timezone",
+					"Europe/London")
 
 				.build ()
 

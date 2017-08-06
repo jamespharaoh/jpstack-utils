@@ -10,8 +10,7 @@ import java.util.Date;
 
 import org.joda.time.DateTimeZone;
 
-import wbs.utils.time.TextualInterval;
-import wbs.utils.time.TimeFormatException;
+import wbs.utils.time.interval.TextualInterval;
 
 @Deprecated
 public
@@ -66,7 +65,7 @@ class TimestampFromParamChecker
 			return instantToDateNullSafe (
 				interval.start ());
 
-		} catch (TimeFormatException exception) {
+		} catch (Exception exception) {
 
 			throw new ParamFormatException (
 				error);

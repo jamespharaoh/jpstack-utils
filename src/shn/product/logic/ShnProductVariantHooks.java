@@ -412,20 +412,6 @@ class ShnProductVariantHooks
 			}
 
 			if (
-				isNull (
-					variant.getRecommendedRetailPrice ())
-			) {
-
-				errorsBuilder.add (
-					Pair.of (
-						variant,
-						stringFormat (
-							"Must set recommended retail price for active ",
-							"product variant")));
-
-			}
-
-			if (
 
 				isNull (
 					variant.getShoppingNationPrice ())

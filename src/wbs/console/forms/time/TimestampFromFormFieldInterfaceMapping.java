@@ -6,6 +6,8 @@ import static wbs.utils.etc.OptionalUtils.optionalIsNotPresent;
 import static wbs.utils.etc.OptionalUtils.optionalOf;
 import static wbs.utils.etc.ResultUtils.errorResultFormat;
 import static wbs.utils.etc.ResultUtils.successResult;
+import static wbs.utils.etc.ResultUtils.successResultAbsent;
+import static wbs.utils.etc.ResultUtils.successResultPresent;
 import static wbs.utils.string.StringUtils.stringIsEmpty;
 
 import java.util.Map;
@@ -17,7 +19,8 @@ import lombok.NonNull;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import org.joda.time.Instant;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 import wbs.console.forms.types.FormFieldInterfaceMapping;
 import wbs.console.misc.ConsoleUserHelper;
@@ -29,7 +32,7 @@ import wbs.framework.database.NestedTransaction;
 import wbs.framework.database.Transaction;
 import wbs.framework.logging.LogContext;
 
-import wbs.utils.time.TextualInterval;
+import wbs.utils.time.interval.TextualInterval;
 
 import fj.data.Either;
 
@@ -37,15 +40,15 @@ import fj.data.Either;
 @PrototypeComponent ("timestampFromFormFieldInterfaceMapping")
 public
 class TimestampFromFormFieldInterfaceMapping <Container>
-	implements FormFieldInterfaceMapping <Container, Instant, String> {
+	implements FormFieldInterfaceMapping <Container, DateTime, String> {
 
 	// singleton dependencies
 
+	@SingletonDependency
+	ConsoleUserHelper consoleUserHelper;
+
 	@ClassSingletonDependency
 	LogContext logContext;
-
-	@SingletonDependency
-	ConsoleUserHelper preferences;
 
 	// properties
 
@@ -56,7 +59,7 @@ class TimestampFromFormFieldInterfaceMapping <Container>
 
 	@Override
 	public
-	Either <Optional <Instant>, String> interfaceToGeneric (
+	Either <Optional <DateTime>, String> interfaceToGeneric (
 			@NonNull Transaction parentTransaction,
 			@NonNull Container container,
 			@NonNull Map <String, Object> hints,
@@ -86,16 +89,17 @@ class TimestampFromFormFieldInterfaceMapping <Container>
 
 			} else {
 
-				try {
+				DateTimeZone timezone =
+					consoleUserHelper.timezone (
+						transaction);
 
-					// TODO timezone should not be hardcoded
+				try {
 
 					TextualInterval interval =
 						TextualInterval.parseRequired (
-							preferences.timezone (
-								transaction),
+							timezone,
 							interfaceValue.get (),
-							preferences.hourOffset (
+							consoleUserHelper.hourOffset (
 								transaction));
 
 					return successResult (
@@ -122,7 +126,7 @@ class TimestampFromFormFieldInterfaceMapping <Container>
 			@NonNull Transaction parentTransaction,
 			@NonNull Container container,
 			@NonNull Map <String, Object> hints,
-			@NonNull Optional <Instant> genericValue) {
+			@NonNull Optional <DateTime> genericValue) {
 
 		try (
 
@@ -138,16 +142,14 @@ class TimestampFromFormFieldInterfaceMapping <Container>
 					genericValue)
 			) {
 
-				return successResult (
-					Optional.<String>absent ());
+				return successResultAbsent ();
 
 			} else {
 
-				return successResult (
-					Optional.of (
-						preferences.timestampWithTimezoneString (
-							transaction,
-							genericValue.get ())));
+				return successResultPresent (
+					consoleUserHelper.timestampWithTimezoneString (
+						transaction,
+						genericValue.get ()));
 
 			}
 

@@ -27,7 +27,22 @@
   <target name="generate-helpers" depends="just-build-framework, just-build-meta, just-generate-records, just-build-entity, just-generate-object-helpers, just-generate-console-helpers"/>
   <target name="just-clean">
     <delete includeEmptyDirs="true" failonerror="false">
+      <fileset dir="work/api" includes="**/*"/>
+    </delete>
+    <delete includeEmptyDirs="true" failonerror="false">
+      <fileset dir="work/api-test" includes="**/*"/>
+    </delete>
+    <delete includeEmptyDirs="true" failonerror="false">
+      <fileset dir="work/console" includes="**/*"/>
+    </delete>
+    <delete includeEmptyDirs="true" failonerror="false">
+      <fileset dir="work/console-test" includes="**/*"/>
+    </delete>
+    <delete includeEmptyDirs="true" failonerror="false">
       <fileset dir="work/bin" includes="**/*"/>
+    </delete>
+    <delete includeEmptyDirs="true" failonerror="false">
+      <fileset dir="work/daemon" includes="**/*"/>
     </delete>
     <delete includeEmptyDirs="true" failonerror="false">
       <fileset dir="work/generated" includes="**/*"/>
@@ -532,6 +547,7 @@
   <target name="just-sql-schema">
     <taskdef name="database-init" classname="wbs.utils.ant.DatabaseInitTask" classpathref="classpath"/>
     <database-init>
+      <script name="src/wbs/integrations/shopify/model/shopify.sql"/>
       <script name="src/wbs/platform/exception/model/exception.sql"/>
       <script name="src/wbs/platform/group/model/group.sql"/>
       <script name="src/wbs/platform/lock/model/lock.sql"/>
