@@ -2,7 +2,7 @@ package wbs.framework.logging;
 
 import lombok.NonNull;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public
 class Log4jLogTargetFactory
@@ -14,7 +14,7 @@ class Log4jLogTargetFactory
 			@NonNull CharSequence staticContext) {
 
 		return new Log4jLogTarget (
-			Logger.getLogger (
+			LogManager.getLogger (
 				staticContext.toString ()));
 
 	}

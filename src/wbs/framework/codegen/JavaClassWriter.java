@@ -55,7 +55,8 @@ import lombok.experimental.Accessors;
 
 import org.apache.commons.lang3.tuple.Pair;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.NamedDependency;
@@ -845,7 +846,7 @@ class JavaClassWriter
 		formatWriter.writeLineFormat (
 			"\t%s.getLogger (",
 			imports.register (
-				Logger.class));
+				LogManager.class));
 
 		formatWriter.writeLineFormat (
 			"\t\t%s.class);",

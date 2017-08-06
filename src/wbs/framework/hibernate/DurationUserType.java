@@ -17,7 +17,7 @@ import java.sql.Types;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.hibernate.engine.spi.SessionImplementor;
+import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.type.CustomType;
 import org.hibernate.usertype.UserType;
 import org.joda.time.Duration;
@@ -64,7 +64,7 @@ class DurationUserType
 	Object nullSafeGet (
 			ResultSet resultSet,
 			String[] names,
-			SessionImplementor session,
+			SharedSessionContractImplementor session,
 			Object owner)
 		throws SQLException {
 
@@ -182,7 +182,7 @@ class DurationUserType
 			PreparedStatement statement,
 			Object value,
 			int index,
-			SessionImplementor session)
+			SharedSessionContractImplementor session)
 		throws SQLException {
 
 		if (value == null) {

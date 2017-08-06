@@ -634,6 +634,12 @@ writeBuildFile world = do
 			sattr "value" value
 		] []
 
+	let makeSysProperty key value =
+		mkelem "sysproperty" [
+			sattr "key" key,
+			sattr "value" value
+		] []
+
 	let makeEnvKeyValue key value =
 		mkelem "env" [
 			sattr "key" key,
@@ -934,6 +940,8 @@ writeBuildFile world = do
 					sattr "classpathref" "classpath",
 					sattr "failonerror" "true"
 				] [
+					makeSysProperty "log4j2.disable.jmx" "true",
+					makeSysProperty "log4j.configurationFile" "src/log4j2.xml",
 					makeArgValue "wbs-test",
 					makeArgValue "wbs.test",
 					makeArgValue "generate,model-meta,model-generate,utils",
@@ -954,6 +962,8 @@ writeBuildFile world = do
 					sattr "classpathref" "classpath",
 					sattr "failonerror" "true"
 				] [
+					makeSysProperty "log4j2.disable.jmx" "true",
+					makeSysProperty "log4j.configurationFile" "src/log4j2.xml",
 					makeArgValue "wbs-test",
 					makeArgValue "wbs.test",
 					makeArgValue (
@@ -976,6 +986,8 @@ writeBuildFile world = do
 					sattr "classpathref" "classpath",
 					sattr "failonerror" "true"
 				] [
+					makeSysProperty "log4j2.disable.jmx" "true",
+					makeSysProperty "log4j.configurationFile" "src/log4j2.xml",
 					makeArgValue "wbs-test",
 					makeArgValue "wbs.test",
 					makeArgValue (
@@ -1003,6 +1015,7 @@ writeBuildFile world = do
 					sattr "classpathref" "classpath",
 					sattr "failonerror" "true"
 				] [
+					makeSysProperty "log4j2.disable.jmx" "true",
 					makeArgValue "wbs-test",
 					makeArgValue "wbs.test",
 					makeArgValue (
@@ -1028,6 +1041,7 @@ writeBuildFile world = do
 					sattr "classpathref" "classpath",
 					sattr "failonerror" "true"
 				] [
+					makeSysProperty "log4j2.disable.jmx" "true",
 					makeArgValue "wbs-test",
 					makeArgValue "wbs.test",
 					makeArgValue ("utils,config,data,entity,schema,sql," ++
@@ -1048,6 +1062,7 @@ writeBuildFile world = do
 					sattr "classpathref" "classpath",
 					sattr "failonerror" "true"
 				] [
+					makeSysProperty "log4j2.disable.jmx" "true",
 					makeArgValue "wbs-test",
 					makeArgValue "wbs.test",
 					makeArgValue ("utils,config,data,entity,schema,sql," ++

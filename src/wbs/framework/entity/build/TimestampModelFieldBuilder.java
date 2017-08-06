@@ -14,8 +14,6 @@ import com.google.common.collect.ImmutableMap;
 
 import lombok.NonNull;
 
-import org.jadira.usertype.dateandtime.joda.PersistentInstantAsString;
-import org.jadira.usertype.dateandtime.joda.PersistentInstantAsTimestamp;
 import org.joda.time.Instant;
 
 import wbs.framework.builder.Builder;
@@ -30,6 +28,7 @@ import wbs.framework.entity.meta.fields.TimestampFieldSpec;
 import wbs.framework.entity.meta.fields.TimestampFieldSpec.ColumnType;
 import wbs.framework.entity.model.ModelField;
 import wbs.framework.entity.model.ModelFieldType;
+import wbs.framework.hibernate.TimestampAsIsoStringUserType;
 import wbs.framework.hibernate.TimestampWithTimezoneUserType;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.OwnedTaskLogger;
@@ -153,12 +152,7 @@ class TimestampModelFieldBuilder
 
 	public final static
 	Map <ColumnType, Optional <Class <?>>> hibernateTypeHelperByColumnType =
-		ImmutableMap.<ColumnType,Optional<Class<?>>>builder ()
-
-		.put (
-			ColumnType.sql,
-			Optional.of (
-				PersistentInstantAsTimestamp.class))
+		ImmutableMap.<ColumnType, Optional <Class <?>>> builder ()
 
 		.put (
 			ColumnType.postgresql,
@@ -168,17 +162,13 @@ class TimestampModelFieldBuilder
 		.put (
 			ColumnType.iso,
 			Optional.of (
-				PersistentInstantAsString.class))
+				TimestampAsIsoStringUserType.class))
 
 		.build ();
 
 	public final static
-	Map<ColumnType,Optional<String>> sqlTypeByColumnType =
-		ImmutableMap.<ColumnType,Optional<String>>builder ()
-
-		.put (
-			ColumnType.sql,
-			Optional.absent ())
+	Map <ColumnType, Optional <String>> sqlTypeByColumnType =
+		ImmutableMap.<ColumnType, Optional <String>> builder ()
 
 		.put (
 			ColumnType.postgresql,
@@ -192,12 +182,8 @@ class TimestampModelFieldBuilder
 		.build ();
 
 	public final static
-	Map<ColumnType,Class<?>> valueTypeByColumnType =
-		ImmutableMap.<ColumnType,Class<?>>builder ()
-
-		.put (
-			ColumnType.sql,
-			Instant.class)
+	Map <ColumnType, Class <?>> valueTypeByColumnType =
+		ImmutableMap.<ColumnType, Class <?>> builder ()
 
 		.put (
 			ColumnType.iso,

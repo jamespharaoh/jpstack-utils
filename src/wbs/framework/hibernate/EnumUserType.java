@@ -16,7 +16,7 @@ import lombok.NonNull;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import org.hibernate.engine.spi.SessionImplementor;
+import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.usertype.UserType;
 
 import wbs.utils.collection.ReversableMap;
@@ -97,7 +97,7 @@ class EnumUserType <DatabaseType, JavaType extends Enum <?>>
 	Object nullSafeGet (
 			ResultSet resultSet,
 			String[] names,
-			SessionImplementor session,
+			SharedSessionContractImplementor session,
 			Object owner)
 		throws SQLException {
 
@@ -154,7 +154,7 @@ class EnumUserType <DatabaseType, JavaType extends Enum <?>>
 			PreparedStatement statement,
 			Object value,
 			int index,
-			SessionImplementor session)
+			SharedSessionContractImplementor session)
 		throws SQLException {
 
 		if (value == null) {

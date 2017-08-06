@@ -2,23 +2,20 @@ package wbs.framework.hibernate;
 
 import static wbs.utils.etc.OptionalUtils.optionalEqualOrNotPresentSafe;
 import static wbs.utils.etc.OptionalUtils.optionalFromNullable;
-import static wbs.utils.time.TimeUtils.toInstant;
 
 import java.io.Serializable;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.sql.Types;
 
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.type.CustomType;
 import org.hibernate.usertype.UserType;
-import org.joda.time.Instant;
-import org.joda.time.ReadableInstant;
+import org.joda.time.LocalDate;
 
 public
-class TimestampWithTimezoneUserType
+class DateUserType
 	implements UserType {
 
 	@Override
@@ -61,18 +58,15 @@ class TimestampWithTimezoneUserType
 			Object owner)
 		throws SQLException {
 
-		Timestamp timestamp =
-			resultSet.getTimestamp (
+		String stringValue =
+			resultSet.getString (
 				names [0]);
 
 		if (resultSet.wasNull ())
 			return null;
 
-		Instant instant =
-			toInstant (
-				timestamp);
-
-		return instant;
+		return LocalDate.parse (
+			stringValue);
 
 	}
 
@@ -89,28 +83,26 @@ class TimestampWithTimezoneUserType
 
 			statement.setNull (
 				index,
-				Types.TIMESTAMP);
+				Types.VARCHAR);
 
 			return;
 
 		}
 
-		ReadableInstant instantValue =
-			(ReadableInstant) value;
+		LocalDate localDateValue =
+			(LocalDate) value;
 
-		statement.setObject (
+		statement.setString (
 			index,
-			new Timestamp (
-				instantValue.getMillis ()),
-			Types.TIMESTAMP);
+			localDateValue.toString ());
 
 	}
 
 	@Override
 	public
-	Class<?> returnedClass () {
+	Class <?> returnedClass () {
 
-		return Instant.class;
+		return LocalDate.class;
 
 	}
 
@@ -119,7 +111,7 @@ class TimestampWithTimezoneUserType
 	int[] sqlTypes () {
 
 		return new int [] {
-			Types.TIMESTAMP,
+			Types.VARCHAR,
 		};
 
 	}
@@ -166,6 +158,6 @@ class TimestampWithTimezoneUserType
 	public final static
 	CustomType INSTANCE =
 		new CustomType (
-			new TimestampWithTimezoneUserType ());
+			new DateUserType ());
 
 }

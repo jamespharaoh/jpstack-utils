@@ -48,7 +48,6 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 import org.joda.time.Instant;
-import org.joda.time.LocalDate;
 import org.joda.time.Seconds;
 
 import wbs.framework.component.annotations.ClassSingletonDependency;
@@ -126,14 +125,6 @@ class HibernateSessionFactoryBuilder {
 					"initCustomTypes");
 
 		) {
-
-			customTypes.put (
-				LocalDate.class,
-				"org.jadira.usertype.dateandtime.joda.PersistentLocalDate");
-
-			customTypes.put (
-				Instant.class,
-				"org.jadira.usertype.dateandtime.joda.PersistentInstantAsString");
 
 			for (
 				PluginSpec plugin

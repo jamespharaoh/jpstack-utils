@@ -37,7 +37,6 @@ class TimestampFieldSpec
 	enum ColumnType {
 		unix,       // time since epoch
 		iso,        // iso datetime string
-		sql,        // sql timestamp
 		postgresql; // postgresql timestamp with time zone (java date)
 	}
 

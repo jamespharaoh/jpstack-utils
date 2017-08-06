@@ -11,36 +11,36 @@ import java.sql.Types;
 import java.util.Properties;
 import java.util.Set;
 
-import org.hibernate.engine.spi.SessionImplementor;
+import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.usertype.ParameterizedType;
 import org.hibernate.usertype.UserType;
 
 import wbs.utils.collection.ReversableMap;
 
 public
-class HibernateEnumType<EnumType extends Enum<?>>
+class HibernateEnumType <EnumType extends Enum <?>>
 	implements
 		ParameterizedType,
 		UserType {
 
 	private
-	Class<EnumType> enumClass;
+	Class <EnumType> enumClass;
 
 	private
-	ReversableMap<String,EnumType> keyToEnumMap =
-		ReversableMap.<String,EnumType>makeHashed ();
+	ReversableMap <String, EnumType> keyToEnumMap =
+		ReversableMap.<String, EnumType> makeHashed ();
 
 	public
 	HibernateEnumType () {
 	}
 
 	public
-	Set<String> databaseValues () {
+	Set <String> databaseValues () {
 		return keyToEnumMap.keySet ();
 	}
 
 	public
-	Set<EnumType> javaValues () {
+	Set <EnumType> javaValues () {
 		return keyToEnumMap.valueSet ();
 	}
 
@@ -87,7 +87,7 @@ class HibernateEnumType<EnumType extends Enum<?>>
 	Object nullSafeGet (
 			ResultSet resultSet,
 			String[] names,
-			SessionImplementor session,
+			SharedSessionContractImplementor session,
 			Object owner)
 		throws SQLException {
 
@@ -129,7 +129,7 @@ class HibernateEnumType<EnumType extends Enum<?>>
 			PreparedStatement statement,
 			Object value,
 			int index,
-			SessionImplementor session)
+			SharedSessionContractImplementor session)
 		throws SQLException {
 
 		if (value == null) {

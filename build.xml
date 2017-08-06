@@ -588,6 +588,8 @@
   </target>
   <target name="just-generate-records">
     <java classname="wbs.framework.component.tools.ComponentRunner" classpathref="classpath" failonerror="true">
+      <sysproperty key="log4j2.disable.jmx" value="true"/>
+      <sysproperty key="log4j.configurationFile" value="src/log4j2.xml"/>
       <arg value="wbs-test"/>
       <arg value="wbs.test"/>
       <arg value="generate,model-meta,model-generate,utils"/>
@@ -598,6 +600,8 @@
   </target>
   <target name="just-generate-object-helpers">
     <java classname="wbs.framework.component.tools.ComponentRunner" classpathref="classpath" failonerror="true">
+      <sysproperty key="log4j2.disable.jmx" value="true"/>
+      <sysproperty key="log4j.configurationFile" value="src/log4j2.xml"/>
       <arg value="wbs-test"/>
       <arg value="wbs.test"/>
       <arg value="entity,generate,model,model-meta,object-generate,schema,utils"/>
@@ -608,6 +612,8 @@
   </target>
   <target name="just-generate-console-helpers">
     <java classname="wbs.framework.component.tools.ComponentRunner" classpathref="classpath" failonerror="true">
+      <sysproperty key="log4j2.disable.jmx" value="true"/>
+      <sysproperty key="log4j.configurationFile" value="src/log4j2.xml"/>
       <arg value="wbs-test"/>
       <arg value="wbs.test"/>
       <arg value="entity,generate,model,model-meta,object-generate,schema,utils"/>
@@ -618,6 +624,7 @@
   </target>
   <target name="just-schema-create">
     <java classname="wbs.framework.component.tools.ComponentRunner" classpathref="classpath" failonerror="true">
+      <sysproperty key="log4j2.disable.jmx" value="true"/>
       <arg value="wbs-test"/>
       <arg value="wbs.test"/>
       <arg value="utils,config,data,entity,model-meta,schema,sql,schema-tool"/>
@@ -628,6 +635,7 @@
   </target>
   <target name="just-model-fixtures">
     <java classname="wbs.framework.component.tools.ComponentRunner" classpathref="classpath" failonerror="true">
+      <sysproperty key="log4j2.disable.jmx" value="true"/>
       <arg value="wbs-test"/>
       <arg value="wbs.test"/>
       <arg value="utils,config,data,entity,schema,sql,model,model-meta,hibernate,object,logic,fixture"/>
@@ -638,6 +646,7 @@
   </target>
   <target name="just-fixture-providers">
     <java classname="wbs.framework.component.tools.ComponentRunner" classpathref="classpath" failonerror="true">
+      <sysproperty key="log4j2.disable.jmx" value="true"/>
       <arg value="wbs-test"/>
       <arg value="wbs.test"/>
       <arg value="utils,config,data,entity,schema,sql,model,model-meta,hibernate,object,logic,fixture"/>

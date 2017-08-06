@@ -87,12 +87,14 @@
 		<dependency
 			org="org.hibernate"
 			name="hibernate-core"
-			rev="5.0.6.Final"/>
+			rev="5.2.10.Final"/>
 
+<!--
 		<dependency
 			org="org.hibernate"
 			name="hibernate-validator"
 			rev="5.2.2.Final"/>
+-->
 
 		<dependency
 			org="javax.transaction"
@@ -169,8 +171,13 @@
 
 		<dependency
 			org="org.apache.logging.log4j"
+			name="log4j-api"
+			rev="2.8.2"/>
+
+		<dependency
+			org="org.apache.logging.log4j"
 			name="log4j-core"
-			rev="2.5"/>
+			rev="2.8.2"/>
 
 		<!-- lombok -->
 
@@ -219,10 +226,12 @@
 
 		<!-- usertype -->
 
+		<!--
 		<dependency
 			org="org.jadira.usertype"
 			name="usertype.jodatime"
 			rev="2.0.1"/>
+		-->
 
 		<!-- validation -->
 
