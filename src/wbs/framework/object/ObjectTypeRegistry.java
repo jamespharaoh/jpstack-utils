@@ -1,6 +1,10 @@
 package wbs.framework.object;
 
+import static wbs.utils.string.StringUtils.underscoreToCamel;
+
 import java.util.List;
+
+import lombok.NonNull;
 
 import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.Record;
@@ -38,5 +42,15 @@ interface ObjectTypeRegistry {
 
 	String codeForTypeIdRequired (
 			Long typeId);
+
+	default
+	String nameForTypeIdRequired (
+			@NonNull Long typeId) {
+
+		return underscoreToCamel (
+			codeForTypeIdRequired (
+				typeId));
+
+	}
 
 }
