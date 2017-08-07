@@ -166,24 +166,6 @@ class ShnProductHooks
 			}
 
 			if (
-
-				isNull (
-					product.getPublicContents ())
-
-				|| stringIsEmpty (
-					stringTrim (
-						product.getPublicContents ().getText ()))
-
-			) {
-
-				errorsBuilder.add (
-					Pair.of (
-						product,
-						"Must set public contents for active product"));
-
-			}
-
-			if (
 				isNull (
 					product.getSupplier ())
 			) {
