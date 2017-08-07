@@ -78,6 +78,16 @@
 
 	</fields>
 
+	<collections>
+
+		<children-collection
+			name="products"
+			type="shnProduct"
+			join-column="sub_category_id"
+			order-sql="item_number"/>
+
+	</collections>
+
 	<event-types>
 
 		<event-type

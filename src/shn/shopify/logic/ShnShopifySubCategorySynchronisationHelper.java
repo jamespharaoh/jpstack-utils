@@ -1,5 +1,6 @@
 package shn.shopify.logic;
 
+import static wbs.utils.collection.CollectionUtils.collectionIsNotEmpty;
 import static wbs.utils.etc.LogicUtils.ifNotNullThenElse;
 import static wbs.utils.etc.Misc.shouldNeverHappen;
 import static wbs.utils.etc.NullUtils.isNotNull;
@@ -520,7 +521,10 @@ customCollections.forEach (
 		subCategoryAttributeFactory.sendSimple (
 			Boolean.class,
 			"published",
-			ShnProductSubCategoryRec::getActive,
+			subCategory ->
+				subCategory.getActive ()
+				&& collectionIsNotEmpty (
+					subCategory.getProducts ()),
 			ShopifyCustomCollectionRequest::published,
 			response ->
 				isNotNull (
