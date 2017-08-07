@@ -20,7 +20,6 @@ import static wbs.utils.etc.OptionalUtils.presentInstancesList;
 import static wbs.utils.etc.TypeUtils.genericCastUnchecked;
 import static wbs.utils.string.StringUtils.lowercase;
 import static wbs.utils.string.StringUtils.stringContains;
-import static wbs.utils.string.StringUtils.underscoreToCamel;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -48,9 +47,7 @@ import wbs.framework.database.OwnedTransaction;
 import wbs.framework.entity.record.Record;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.TaskLogger;
-
-import wbs.platform.object.core.model.ObjectTypeObjectHelper;
-import wbs.platform.object.core.model.ObjectTypeRec;
+import wbs.framework.object.ObjectTypeRegistry;
 
 @SingletonComponent ("objectFormFieldSearchAsyncEndpoint")
 public
@@ -69,7 +66,7 @@ class ObjectFormFieldSearchAsyncEndpoint
 	ConsoleObjectManager objectManager;
 
 	@SingletonDependency
-	ObjectTypeObjectHelper objectTypeHelper;
+	ObjectTypeRegistry objectTypeRegistry;
 
 	// prototype dependencies
 
@@ -126,19 +123,10 @@ class ObjectFormFieldSearchAsyncEndpoint
 
 			;
 
-			ObjectTypeRec objectType =
-				objectTypeHelper.findRequired (
-					transaction,
-					request.objectTypeId ());
-
 			ConsoleHelper <?> consoleHelper =
 				objectManager.consoleHelperForNameRequired (
-					underscoreToCamel (
-						objectType.getCode ()));
-
-			debugFormat (
-				"Object type: %s",
-				consoleHelper.objectName ());
+					objectTypeRegistry.codeForTypeIdRequired (
+						request.objectTypeId ()));
 
 			if (! consoleHelper.consoleHelperProvider ().canSearch ()) {
 
@@ -158,15 +146,10 @@ class ObjectFormFieldSearchAsyncEndpoint
 					request.rootObjectId ())
 			) {
 
-				ObjectTypeRec rootObjectType =
-					objectTypeHelper.findRequired (
-						transaction,
-						request.rootObjectTypeId ());
-
 				ConsoleHelper <?> rootConsoleHelper =
 					objectManager.consoleHelperForNameRequired (
-						underscoreToCamel (
-							rootObjectType.getCode ()));
+						objectTypeRegistry.codeForTypeIdRequired (
+							request.rootObjectTypeId ()));
 
 				rootOptional =
 					genericCastUnchecked (
