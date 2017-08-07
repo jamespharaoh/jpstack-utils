@@ -231,13 +231,18 @@ class ShnShopifyLogicImplementation
 							stringFormat (
 								"local %s",
 								singularName),
+							stringFormat (
+								"remote %s",
+								pluralName)),
 						pluralise (
 							collectionSize (
 								remoteItems),
-							singularName,
+							stringFormat (
+								"local %s",
+								singularName),
 							stringFormat (
 								"remote %s",
-								pluralName)))));
+								pluralName))));
 
 			}
 
