@@ -7,6 +7,7 @@ import com.google.common.base.Optional;
 import wbs.console.context.ConsoleContext;
 import wbs.console.context.ConsoleContextStuff;
 import wbs.console.context.ConsoleContextType;
+import wbs.console.priv.UserPrivChecker;
 import wbs.console.supervisor.SupervisorConfig;
 import wbs.console.tab.ConsoleContextTab;
 
@@ -18,6 +19,7 @@ interface ConsoleManager {
 
 	void changeContext (
 			TaskLogger taskLogger,
+			UserPrivChecker privChecker,
 			ConsoleContext context,
 			String contextPartSuffix);
 
@@ -35,6 +37,7 @@ interface ConsoleManager {
 
 	void runPostProcessors (
 			Transaction parentTransaction,
+			UserPrivChecker privChecker,
 			String name,
 			ConsoleContextStuff contextStuff);
 

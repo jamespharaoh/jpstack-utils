@@ -33,7 +33,7 @@ class ConsoleAsyncManagerImplementation
 	// singleton dependencies
 
 	@SingletonDependency
-	Map <String, ConsoleAsyncEndpoint> asyncEndpointsByComponentName;
+	Map <String, ConsoleAsyncEndpoint <?>> asyncEndpointsByComponentName;
 
 	@ClassSingletonDependency
 	LogContext logContext;
@@ -48,7 +48,7 @@ class ConsoleAsyncManagerImplementation
 
 	// state
 
-	Map <String, ConsoleAsyncEndpoint> asyncEndpointsByEndpoint;
+	Map <String, ConsoleAsyncEndpoint <?>> asyncEndpointsByEndpoint;
 
 	Map <String, ConsoleAsyncConnection> connectionsByConnectionId =
 		new HashMap<> ();
@@ -72,7 +72,7 @@ class ConsoleAsyncManagerImplementation
 
 		) {
 
-			ImmutableMap.Builder <String, ConsoleAsyncEndpoint>
+			ImmutableMap.Builder <String, ConsoleAsyncEndpoint <?>>
 				asyncEndpointsByEndpointBuilder =
 					ImmutableMap.builder ();
 
@@ -80,14 +80,14 @@ class ConsoleAsyncManagerImplementation
 				new HashSet <String> ();
 
 			for (
-				Map.Entry <String, ConsoleAsyncEndpoint> asyncEndpointEntry
+				Map.Entry <String, ConsoleAsyncEndpoint <?>> asyncEndpointEntry
 					: asyncEndpointsByComponentName.entrySet ()
 			) {
 
 				String componentName =
 					asyncEndpointEntry.getKey ();
 
-				ConsoleAsyncEndpoint asyncEndpoint =
+				ConsoleAsyncEndpoint <?> asyncEndpoint =
 					asyncEndpointEntry.getValue ();
 
 				taskLogger.debugFormat (
@@ -198,7 +198,7 @@ class ConsoleAsyncManagerImplementation
 
 	@Override
 	public
-	ConsoleAsyncEndpoint asyncEndpointForPathRequired (
+	ConsoleAsyncEndpoint <?> asyncEndpointForPathRequired (
 			@NonNull String endpointPath) {
 
 		return mapItemForKeyRequired (

@@ -16,6 +16,7 @@ import wbs.console.forms.object.EntityFinder;
 import wbs.console.helper.manager.ConsoleObjectManager;
 import wbs.console.helper.provider.ConsoleHelperProvider;
 import wbs.console.lookup.ObjectLookup;
+import wbs.console.priv.UserPrivChecker;
 import wbs.console.request.ConsoleRequestContext;
 
 import wbs.framework.component.annotations.ClassSingletonDependency;
@@ -127,10 +128,12 @@ class ConsoleHelperImplementation <
 	public
 	boolean canView (
 			@NonNull Transaction parentTransaction,
+			@NonNull UserPrivChecker privChecker,
 			@NonNull RecordType object) {
 
 		return consoleHelperProvider.canView (
 			parentTransaction,
+			privChecker,
 			object);
 
 	}
@@ -139,10 +142,12 @@ class ConsoleHelperImplementation <
 	public
 	boolean canCreateIn (
 			@NonNull Transaction parentTransaction,
+			@NonNull UserPrivChecker privChecker,
 			@NonNull Record <?> parent) {
 
 		return consoleHelperProvider.canCreateIn (
 			parentTransaction,
+			privChecker,
 			parent);
 
 	}

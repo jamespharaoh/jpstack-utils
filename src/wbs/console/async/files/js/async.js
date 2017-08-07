@@ -21,6 +21,7 @@ var async = {
 	_onDisconnectCallbacks: [],
 
 	_subscriptions: undefined,
+	_calls: undefined,
 
 };
 
@@ -72,6 +73,7 @@ function asyncConnect () {
 			"Web socket connected");
 
 		async._subscriptions = {};
+		async._calls = {};
 
 		async._onConnectCallbacks.forEach (
 			function (onConnectCallback) {
@@ -96,6 +98,7 @@ function asyncConnect () {
 			"Web socket closed");
 
 		async._subscriptions = undefined;
+		async._calls = undefined;
 
 		async._onDisconnectCallbacks.forEach (
 			function (onDisconnectCallback) {
@@ -113,6 +116,8 @@ function asyncConnect () {
 
 		var message = JSON.parse (event.data);
 
+		//console.debug ("ASYNC RECEIVE: " + event.data);
+
 		var endpoint = message.endpoint;
 		var payload = message.payload;
 
@@ -127,24 +132,46 @@ function asyncConnect () {
 
 		}
 
-		if (! (endpoint in async._subscriptions)) {
+		if ("messageId" in message) {
 
-			console.error (
-				"Received message from unknown endpoint: " + endpoint);
+			var messageId = message.messageId;
 
-			return;
+			if (! (messageId in async._calls)) {
+
+				console.error (
+					"Received message with unknown id: " + messageId);
+
+			}
+
+			callback = async._calls [messageId];
+
+			delete async._calls [messageId];
+
+			callback (payload);
+
+		} else {
+
+			if (! (endpoint in async._subscriptions)) {
+
+				console.error (
+					"Received message from unknown endpoint: " + endpoint);
+
+				return;
+
+			}
+
+			callback = async._subscriptions [endpoint];
+
+			callback (payload);
 
 		}
-
-		callback = async._subscriptions [endpoint];
-
-		callback (payload);
 
 	};
 
 };
 
-async.onConnect = function asyncOnConnect (callback) {
+async.onConnect =
+function onConnect (callback) {
 
 	async._onConnectCallbacks.push (
 		callback);
@@ -155,14 +182,16 @@ async.onConnect = function asyncOnConnect (callback) {
 
 }
 
-async.onDisconnect = function asyncOnDisconnect (callback) {
+async.onDisconnect =
+function onDisconnect (callback) {
 
 	async._onDisconnectCallbacks.push (
 		callback);
 
 }
 
-async.send = function asyncSend (endpoint, payload) {
+async.send =
+function send (endpoint, payload) {
 
 	if (async._state != "connected") {
 		return;
@@ -182,18 +211,48 @@ async.send = function asyncSend (endpoint, payload) {
 
 	}
 
+	var messageId =
+		async._generateRandomId ();
+
+	var data = {
+		sessionId: Cookies.get ("wbs-session-id"),
+		userId: Number (Cookies.get ("wbs-user-id")),
+		endpoint: endpoint,
+		messageId: messageId,
+		payload: payload,
+	};
+
+	var dataString =
+		JSON.stringify (data);
+
+	//console.debug ("ASYNC SEND: " + dataString);
+
 	async._webSocket.send (
-		JSON.stringify ({
-			sessionId: Cookies.get ("wbs-session-id"),
-			userId: Number (Cookies.get ("wbs-user-id")),
-			endpoint: endpoint,
-			payload: payload,
-		})
-	);
+		dataString);
 
-}
+	return messageId;
 
-async.subscribe = function asyncSubscribe (endpoint, handler) {
+};
+
+async.call =
+function call (endpoint, payload, callback) {
+
+	var messageId =
+		async.send (
+			endpoint,
+			payload);
+
+	if (messageId) {
+
+		async._calls [messageId] =
+			callback;
+
+	}
+
+};
+
+async.subscribe =
+function subscribe (endpoint, handler) {
 
 	if (endpoint in async._subscriptions) {
 
@@ -209,7 +268,7 @@ async.subscribe = function asyncSubscribe (endpoint, handler) {
 }
 
 async._keepaliveLoop =
-function asyncKeepaliveLoop () {
+function keepaliveLoop () {
 
 	async._keepaliveSend ();
 
@@ -220,11 +279,33 @@ function asyncKeepaliveLoop () {
 };
 
 async._keepaliveSend =
-function asyncSendKeepalive () {
+function keepaliveSend () {
 
 	async.send (
 		"/status/keepalive",
 		{});
+
+};
+
+async._generateRandomId =
+function generateRandomId (length) {
+
+	length = length || 20;
+
+	var characters = "abcdefghijklmnopqrstuvwxyz";
+
+	var randomId = "";
+
+	for (var index = 0; index < length; index ++) {
+
+		randomId +=
+			characters.charAt (
+				Math.floor (
+					Math.random () * 26));
+
+	}
+
+	return randomId;
 
 };
 

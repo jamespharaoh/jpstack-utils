@@ -1,5 +1,6 @@
 package wbs.console.forms.core;
 
+import static wbs.utils.collection.IterableUtils.iterableFlatMap;
 import static wbs.utils.collection.MapUtils.mapItemForKey;
 import static wbs.utils.etc.Misc.contains;
 import static wbs.utils.etc.TypeUtils.isInstanceOf;
@@ -7,12 +8,12 @@ import static wbs.utils.string.StringUtils.stringFormat;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableSet;
 
 import lombok.Getter;
 import lombok.NonNull;
@@ -21,6 +22,7 @@ import lombok.experimental.Accessors;
 
 import wbs.console.forms.types.FormField;
 import wbs.console.forms.types.FormItem;
+import wbs.console.html.HtmlLink;
 import wbs.console.html.ScriptRef;
 
 import wbs.framework.data.annotations.DataAttribute;
@@ -73,22 +75,21 @@ class FormFieldSetImplementation <Container>
 	public
 	Set <ScriptRef> scriptRefs () {
 
-		// TODO build this as we go
+		return ImmutableSet.copyOf (
+			iterableFlatMap (
+				formItems,
+				FormItem::scriptRefs));
 
-		Set <ScriptRef> scriptRefs =
-			new LinkedHashSet<> ();
+	}
 
-		for (
-			FormItem <Container> formItem
-				: formItems
-		) {
+	@Override
+	public
+	Set <HtmlLink> styles () {
 
-			scriptRefs.addAll (
-				formItem.scriptRefs ());
-
-		}
-
-		return scriptRefs;
+		return ImmutableSet.copyOf (
+			iterableFlatMap (
+				formItems,
+				FormItem::styles));
 
 	}
 

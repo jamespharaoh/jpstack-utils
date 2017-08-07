@@ -47,6 +47,9 @@ class ObjectFormFieldSpec
 		name = "root-field")
 	String rootFieldName;
 
+	@DataAttribute
+	Boolean search;
+
 	@DataAttribute (
 		name = "view-priv")
 	String viewPrivCode;

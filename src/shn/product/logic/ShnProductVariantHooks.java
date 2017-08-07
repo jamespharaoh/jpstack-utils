@@ -399,19 +399,6 @@ class ShnProductVariantHooks
 			}
 
 			if (
-				isNull (
-					variant.getImage ())
-			) {
-
-				errorsBuilder.add (
-					Pair.of (
-						variant,
-						stringFormat (
-							"Must set image for active product variant")));
-
-			}
-
-			if (
 
 				isNull (
 					variant.getShoppingNationPrice ())

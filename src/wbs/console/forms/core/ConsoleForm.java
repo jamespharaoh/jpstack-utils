@@ -13,6 +13,7 @@ import lombok.NonNull;
 import wbs.console.forms.types.FormFieldSubmission;
 import wbs.console.forms.types.FormType;
 import wbs.console.forms.types.FormUpdateResultSet;
+import wbs.console.html.HtmlLink;
 import wbs.console.html.ScriptRef;
 import wbs.console.priv.UserPrivChecker;
 import wbs.console.request.ConsoleRequestContext;
@@ -80,6 +81,11 @@ interface ConsoleForm <Container> {
 	default
 	Set <ScriptRef> scriptRefs () {
 		return allFields ().scriptRefs ();
+	}
+
+	default
+	Set <HtmlLink> styles () {
+		return allFields ().styles ();
 	}
 
 	// property setters

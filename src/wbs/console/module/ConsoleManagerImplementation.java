@@ -41,6 +41,7 @@ import wbs.console.context.ConsoleContextType;
 import wbs.console.helper.core.ConsoleHelper;
 import wbs.console.helper.manager.ConsoleObjectManager;
 import wbs.console.helper.provider.ConsoleHelperProvider;
+import wbs.console.priv.UserPrivChecker;
 import wbs.console.request.ConsoleRequestContext;
 import wbs.console.supervisor.SupervisorConfig;
 import wbs.console.tab.ConsoleContextTab;
@@ -92,6 +93,9 @@ class ConsoleManagerImplementation
 
 	@SingletonDependency
 	ConsoleObjectManager objectManager;
+
+	@SingletonDependency
+	UserPrivChecker privChecker;
 
 	@SingletonDependency
 	ConsoleRequestContext requestContext;
@@ -1144,6 +1148,7 @@ class ConsoleManagerImplementation
 	public
 	void changeContext (
 			@NonNull TaskLogger parentTaskLogger,
+			@NonNull UserPrivChecker privChecker,
 			@NonNull ConsoleContext context,
 			@NonNull String contextPartSuffix) {
 
@@ -1173,6 +1178,7 @@ class ConsoleManagerImplementation
 
 			context.initContext (
 				transaction,
+				privChecker,
 				pathParts,
 				contextStuff);
 
@@ -1197,6 +1203,7 @@ class ConsoleManagerImplementation
 	public
 	void runPostProcessors (
 			@NonNull Transaction parentTransaction,
+			@NonNull UserPrivChecker privChecker,
 			@NonNull String name,
 			@NonNull ConsoleContextStuff contextStuff) {
 
@@ -1218,6 +1225,7 @@ class ConsoleManagerImplementation
 
 			consoleHelperProvider.postProcess (
 				transaction,
+				privChecker,
 				contextStuff);
 
 		}
@@ -1344,6 +1352,7 @@ class ConsoleManagerImplementation
 
 					consoleContext.initContext (
 						transaction,
+						privChecker,
 						pathParts,
 						contextStuff);
 

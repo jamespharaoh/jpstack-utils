@@ -24,6 +24,7 @@ import lombok.NonNull;
 
 import wbs.console.helper.core.ConsoleHelper;
 import wbs.console.html.HtmlTableCellWriter;
+import wbs.console.priv.UserPrivChecker;
 import wbs.console.request.ConsoleRequestContext;
 
 import wbs.framework.component.annotations.ClassSingletonDependency;
@@ -173,6 +174,7 @@ class ConsoleObjectManagerImplementation
 	void writeTdForObject (
 			@NonNull Transaction parentTransaction,
 			@NonNull FormatWriter formatWriter,
+			@NonNull UserPrivChecker privChecker,
 			@NonNull Record <?> object,
 			@NonNull Optional <Record <?>> assumedRootOptional,
 			@NonNull Boolean mini,
@@ -205,6 +207,7 @@ class ConsoleObjectManagerImplementation
 
 				&& canView (
 					transaction,
+					privChecker,
 					object)
 
 			) {
@@ -364,6 +367,7 @@ class ConsoleObjectManagerImplementation
 	public
 	boolean canView (
 			@NonNull Transaction parentTransaction,
+			@NonNull UserPrivChecker privChecker,
 			@NonNull Record <?> object) {
 
 		try (
@@ -382,6 +386,7 @@ class ConsoleObjectManagerImplementation
 
 			return objectHelper.canView (
 				transaction,
+				privChecker,
 				genericCastUnchecked (
 					object));
 

@@ -221,7 +221,7 @@ class ParentFormFieldBuilder
 				.label (
 					label)
 
-				.entityFinder (
+				.consoleHelper (
 					parentHelper)
 
 				.rootFieldName (

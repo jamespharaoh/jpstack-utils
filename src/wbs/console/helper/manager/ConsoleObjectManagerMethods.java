@@ -15,6 +15,7 @@ import com.google.common.base.Optional;
 import lombok.NonNull;
 
 import wbs.console.helper.core.ConsoleHelper;
+import wbs.console.priv.UserPrivChecker;
 
 import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.Record;
@@ -79,6 +80,7 @@ interface ConsoleObjectManagerMethods {
 	void writeTdForObject (
 			Transaction parentTransaction,
 			FormatWriter formatWriter,
+			UserPrivChecker privChecker,
 			Record <?> object,
 			Optional <Record <?>> assumedRootOptional,
 			Boolean mini,
@@ -89,11 +91,13 @@ interface ConsoleObjectManagerMethods {
 	void writeTdForObjectMiniLink (
 			@NonNull Transaction parentTransaction,
 			@NonNull FormatWriter formatWriter,
+			@NonNull UserPrivChecker privChecker,
 			@NonNull Record <?> object) {
 
 		writeTdForObject (
 			parentTransaction,
 			formatWriter,
+			privChecker,
 			object,
 			optionalAbsent (),
 			true,
@@ -106,12 +110,14 @@ interface ConsoleObjectManagerMethods {
 	void writeTdForObjectMiniLink (
 			@NonNull Transaction parentTransaction,
 			@NonNull FormatWriter formatWriter,
+			@NonNull UserPrivChecker privChecker,
 			@NonNull Record <?> object,
 			@NonNull Record <?> assumedRoot) {
 
 		writeTdForObject (
 			parentTransaction,
 			formatWriter,
+			privChecker,
 			object,
 			optionalOf (
 				assumedRoot),
@@ -125,12 +131,14 @@ interface ConsoleObjectManagerMethods {
 	void writeTdForObjectMiniLink (
 			@NonNull Transaction parentTransaction,
 			@NonNull FormatWriter formatWriter,
+			@NonNull UserPrivChecker privChecker,
 			@NonNull Record <?> object,
 			@NonNull Long columnSpan) {
 
 		writeTdForObject (
 			parentTransaction,
 			formatWriter,
+			privChecker,
 			object,
 			optionalAbsent (),
 			true,
@@ -143,6 +151,7 @@ interface ConsoleObjectManagerMethods {
 	void writeTdForObjectMiniLink (
 			@NonNull Transaction parentTransaction,
 			@NonNull FormatWriter formatWriter,
+			@NonNull UserPrivChecker privChecker,
 			@NonNull Record <?> object,
 			@NonNull Record<?> assumedRoot,
 			@NonNull Long columnSpan) {
@@ -150,6 +159,7 @@ interface ConsoleObjectManagerMethods {
 		writeTdForObject (
 			parentTransaction,
 			formatWriter,
+			privChecker,
 			object,
 			optionalOf (
 				assumedRoot),
@@ -163,11 +173,13 @@ interface ConsoleObjectManagerMethods {
 	void writeTdForObjectLink (
 			@NonNull Transaction parentTransaction,
 			@NonNull FormatWriter formatWriter,
+			@NonNull UserPrivChecker privChecker,
 			@NonNull Record <?> object) {
 
 		writeTdForObject (
 			parentTransaction,
 			formatWriter,
+			privChecker,
 			object,
 			optionalAbsent (),
 			false,
@@ -180,12 +192,14 @@ interface ConsoleObjectManagerMethods {
 	void writeTdForObjectLink (
 			@NonNull Transaction parentTransaction,
 			@NonNull FormatWriter formatWriter,
+			@NonNull UserPrivChecker privChecker,
 			@NonNull Record <?> object,
 			@NonNull Record <?> assumedRoot) {
 
 		writeTdForObject (
 			parentTransaction,
 			formatWriter,
+			privChecker,
 			object,
 			optionalOf (
 				assumedRoot),
@@ -199,12 +213,14 @@ interface ConsoleObjectManagerMethods {
 	void writeTdForObjectLink (
 			@NonNull Transaction parentTransaction,
 			@NonNull FormatWriter formatWriter,
+			@NonNull UserPrivChecker privChecker,
 			@NonNull Record <?> object,
 			@NonNull Long columnSpan) {
 
 		writeTdForObject (
 			parentTransaction,
 			formatWriter,
+			privChecker,
 			object,
 			optionalAbsent (),
 			false,
@@ -217,6 +233,7 @@ interface ConsoleObjectManagerMethods {
 	void writeTdForObjectLink (
 			@NonNull Transaction parentTransaction,
 			@NonNull FormatWriter formatWriter,
+			@NonNull UserPrivChecker privChecker,
 			@NonNull Record <?> object,
 			@NonNull Record <?> assumedRoot,
 			@NonNull Long columnSpan) {
@@ -224,6 +241,7 @@ interface ConsoleObjectManagerMethods {
 		writeTdForObject (
 			parentTransaction,
 			formatWriter,
+			privChecker,
 			object,
 			optionalOf (
 				assumedRoot),
@@ -262,6 +280,7 @@ interface ConsoleObjectManagerMethods {
 
 	boolean canView (
 			Transaction parentTransaction,
+			UserPrivChecker privChecker,
 			Record <?> object);
 
 	String contextName (

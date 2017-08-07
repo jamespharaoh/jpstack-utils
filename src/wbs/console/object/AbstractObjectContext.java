@@ -16,6 +16,7 @@ import wbs.console.helper.manager.ConsoleObjectManager;
 import wbs.console.lookup.ObjectLookup;
 import wbs.console.lookup.StringLookup;
 import wbs.console.module.ConsoleManager;
+import wbs.console.priv.UserPrivChecker;
 import wbs.console.request.ConsoleRequestContext;
 import wbs.console.request.Cryptor;
 
@@ -187,6 +188,7 @@ class AbstractObjectContext
 	public
 	void initContext (
 			@NonNull Transaction parentTransaction,
+			@NonNull UserPrivChecker privChecker,
 			@NonNull PathSupply pathParts,
 			@NonNull ConsoleContextStuff contextStuff) {
 
@@ -245,6 +247,7 @@ class AbstractObjectContext
 
 				consoleManager.runPostProcessors (
 					transaction,
+					privChecker,
 					postProcessorName (),
 					contextStuff);
 

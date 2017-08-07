@@ -87,7 +87,8 @@
 				<object-field
 					name="product"
 					object-type="shnProduct"
-					root-field="show.type.database"/>
+					root-field="show.type.database"
+					search="yes"/>
 
 				<integer-field
 					name="minutes"/>
@@ -136,7 +137,8 @@
 				<object-field
 					name="product"
 					object-type="shnProduct"
-					root-field="show.type.database"/>
+					root-field="show.type.database"
+					search="yes"/>
 
 				<integer-field
 					name="minutes"/>

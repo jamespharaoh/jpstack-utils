@@ -13,7 +13,7 @@ interface ConsoleAsyncManager {
 			TaskLogger parentTaskLogger,
 			String connectionId);
 
-	ConsoleAsyncEndpoint asyncEndpointForPathRequired (
+	ConsoleAsyncEndpoint <?> asyncEndpointForPathRequired (
 			String endpointPath);
 
 }

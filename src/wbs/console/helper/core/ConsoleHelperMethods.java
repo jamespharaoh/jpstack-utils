@@ -8,6 +8,7 @@ import com.google.common.collect.Ordering;
 import lombok.NonNull;
 
 import wbs.console.helper.provider.ConsoleHelperProvider;
+import wbs.console.priv.UserPrivChecker;
 
 import wbs.framework.codegen.DoNotDelegate;
 import wbs.framework.database.Transaction;
@@ -83,10 +84,12 @@ interface ConsoleHelperMethods <
 
 	boolean canView (
 			Transaction parentTransaction,
+			UserPrivChecker privChecker,
 			RecordType object);
 
 	boolean canCreateIn (
 			Transaction parentTransaction,
+			UserPrivChecker privChecker,
 			Record <?> parent);
 
 	Optional <RecordType> findFromContext (

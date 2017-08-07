@@ -7,6 +7,7 @@ import static wbs.utils.collection.CollectionUtils.listSecondElementRequired;
 import static wbs.utils.etc.LogicUtils.ifNotNullThenElse;
 import static wbs.utils.etc.NullUtils.ifNull;
 import static wbs.utils.etc.NullUtils.isNotNull;
+import static wbs.utils.etc.NullUtils.isNull;
 import static wbs.utils.etc.OptionalUtils.optionalCast;
 import static wbs.utils.etc.OptionalUtils.optionalGetOrAbsent;
 import static wbs.utils.etc.OptionalUtils.optionalGetRequired;
@@ -86,9 +87,6 @@ class GenericConsoleHelperProvider <
 
 	@WeakSingletonDependency
 	ConsoleRequestContext requestContext;
-
-	@WeakSingletonDependency
-	UserPrivChecker privChecker;
 
 	// required properties
 
@@ -319,6 +317,7 @@ class GenericConsoleHelperProvider <
 	public
 	void postProcess (
 			@NonNull Transaction parentTransaction,
+			@NonNull UserPrivChecker privChecker,
 			@NonNull ConsoleContextStuff contextStuff) {
 
 		try (
@@ -381,10 +380,6 @@ class GenericConsoleHelperProvider <
 			}
 
 			// set privs
-
-			UserPrivChecker privChecker =
-				(UserPrivChecker)
-				this.privChecker;
 
 			for (
 				PrivKeySpec privKeySpec
@@ -455,6 +450,7 @@ class GenericConsoleHelperProvider <
 
 				consoleManager.runPostProcessors (
 					transaction,
+					privChecker,
 					runPostProcessorSpec.name (),
 					contextStuff);
 
@@ -598,6 +594,7 @@ class GenericConsoleHelperProvider <
 	public
 	boolean canView (
 			@NonNull Transaction parentTransaction,
+			@NonNull UserPrivChecker privChecker,
 			@NonNull RecordType object) {
 
 		try (
@@ -825,6 +822,7 @@ class GenericConsoleHelperProvider <
 
 					return delegateHelper.canView (
 						transaction,
+						privChecker,
 						genericCastUnchecked (
 							delegate));
 
@@ -909,6 +907,7 @@ class GenericConsoleHelperProvider <
 	public
 	boolean canCreateIn (
 			@NonNull Transaction parentTransaction,
+			@NonNull UserPrivChecker privChecker,
 			@NonNull Record <?> parent) {
 
 		try (
@@ -939,6 +938,15 @@ class GenericConsoleHelperProvider <
 				createPrivCode);
 
 		}
+
+	}
+
+	@Override
+	public
+	boolean canSearch () {
+
+		return isNull (
+			cryptor);
 
 	}
 

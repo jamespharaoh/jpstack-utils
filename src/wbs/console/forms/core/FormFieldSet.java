@@ -14,6 +14,7 @@ import lombok.NonNull;
 
 import wbs.console.forms.types.FormField;
 import wbs.console.forms.types.FormItem;
+import wbs.console.html.HtmlLink;
 import wbs.console.html.ScriptRef;
 
 public
@@ -47,6 +48,8 @@ interface FormFieldSet <Container> {
 	Long columns ();
 
 	Set <ScriptRef> scriptRefs ();
+
+	Set <HtmlLink> styles ();
 
 	Class <Container> containerClass ();
 

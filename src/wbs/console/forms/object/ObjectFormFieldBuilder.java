@@ -20,6 +20,7 @@ import com.google.common.base.Optional;
 
 import lombok.NonNull;
 
+import wbs.console.context.ConsoleApplicationScriptRef;
 import wbs.console.forms.basic.IdentityFormFieldInterfaceMapping;
 import wbs.console.forms.basic.IdentityFormFieldNativeMapping;
 import wbs.console.forms.basic.RequiredFormFieldValueValidator;
@@ -39,6 +40,8 @@ import wbs.console.forms.types.FormFieldUpdateHook;
 import wbs.console.forms.types.FormFieldValueValidator;
 import wbs.console.helper.core.ConsoleHelper;
 import wbs.console.helper.manager.ConsoleObjectManager;
+import wbs.console.html.HtmlLink;
+import wbs.console.misc.JqueryScriptRef;
 
 import wbs.framework.builder.Builder;
 import wbs.framework.builder.annotations.BuildMethod;
@@ -378,7 +381,7 @@ class ObjectFormFieldBuilder
 				.rootFieldName (
 					rootFieldName)
 
-				.entityFinder (
+				.consoleHelper (
 					consoleHelperOptional.orNull ())
 
 				.mini (
@@ -387,6 +390,11 @@ class ObjectFormFieldBuilder
 
 				.optionLabel (
 					spec.optionLabel ())
+
+				.search (
+					ifNull (
+						spec.search (),
+						false))
 
 			;
 
@@ -442,6 +450,25 @@ class ObjectFormFieldBuilder
 
 					.featureCode (
 						spec.featureCode ())
+
+					.addStyle (
+						HtmlLink.applicationCssStyle (
+							"/style/object-form-field.css"))
+
+					.addScriptRef (
+						JqueryScriptRef.instance)
+
+					.addScriptRef (
+						ConsoleApplicationScriptRef.javascript (
+							"/js/js-cookie-2.0.4.js"))
+
+					.addScriptRef (
+						ConsoleApplicationScriptRef.javascript (
+							"/js/async.js"))
+
+					.addScriptRef (
+						ConsoleApplicationScriptRef.javascript (
+							"/js/object-form-field.js"))
 
 				);
 

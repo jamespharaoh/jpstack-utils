@@ -10,6 +10,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import wbs.console.module.ConsoleManager;
+import wbs.console.priv.UserPrivChecker;
 import wbs.console.request.ConsoleRequestContext;
 import wbs.console.tab.ConsoleContextTab;
 import wbs.console.tab.Tab;
@@ -87,6 +88,7 @@ class ConsoleContext
 	public abstract
 	void initContext (
 			Transaction parentTransaction,
+			UserPrivChecker privChecker,
 			PathSupply pathParts,
 			ConsoleContextStuff contextStuff);
 

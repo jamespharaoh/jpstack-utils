@@ -1,16 +1,17 @@
 package wbs.console.forms.types;
 
+import static wbs.utils.collection.SetUtils.emptySet;
 import static wbs.utils.etc.Misc.doNothing;
 
 import java.util.Collection;
 import java.util.Set;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 
 import lombok.NonNull;
 
 import wbs.console.forms.core.ConsoleForm;
+import wbs.console.html.HtmlLink;
 import wbs.console.html.ScriptRef;
 
 import wbs.framework.database.Transaction;
@@ -41,9 +42,12 @@ interface FormItem <Container> {
 
 	default
 	Set <ScriptRef> scriptRefs () {
+		return emptySet ();
+	}
 
-		return ImmutableSet.of ();
-
+	default
+	Set <HtmlLink> styles () {
+		return emptySet ();
 	}
 
 	default

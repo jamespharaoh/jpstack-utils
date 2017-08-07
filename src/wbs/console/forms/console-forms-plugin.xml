@@ -98,6 +98,7 @@
 		<component class="object.ObjectFormFieldBuilder"/>
 		<component class="object.ObjectFormFieldConstraintValidator"/>
 		<component class="object.ObjectFormFieldRenderer"/>
+		<component class="object.ObjectFormFieldSearchAsyncEndpoint"/>
 		<component class="object.ObjectIdFormFieldNativeMapping"/>
 		<component class="object.ParentFormFieldAccessor"/>
 		<component class="object.ParentFormFieldBuilder"/>

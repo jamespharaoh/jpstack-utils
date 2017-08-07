@@ -8,7 +8,9 @@ import static wbs.utils.etc.NullUtils.isNotNull;
 import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.etc.NumberUtils.moreThanOne;
 import static wbs.utils.etc.NumberUtils.parseIntegerRequired;
+import static wbs.utils.etc.OptionalUtils.ifPresentThenElse;
 import static wbs.utils.etc.OptionalUtils.optionalAbsent;
+import static wbs.utils.etc.OptionalUtils.optionalGetRequired;
 import static wbs.utils.etc.OptionalUtils.optionalIsNotPresent;
 import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
 import static wbs.utils.etc.OptionalUtils.optionalOf;
@@ -33,10 +35,13 @@ import lombok.NonNull;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
+import wbs.console.forms.types.FormField;
 import wbs.console.forms.types.FormFieldRenderer;
 import wbs.console.forms.types.FormFieldSubmission;
 import wbs.console.forms.types.FormType;
+import wbs.console.helper.core.ConsoleHelper;
 import wbs.console.helper.manager.ConsoleObjectManager;
+import wbs.console.priv.UserPrivChecker;
 
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
@@ -68,6 +73,9 @@ class ObjectFormFieldRenderer <Container, Interface extends Record <Interface>>
 	@SingletonDependency
 	ConsoleObjectManager objectManager;
 
+	@SingletonDependency
+	UserPrivChecker privChecker;
+
 	// properties
 
 	@Getter @Setter
@@ -83,7 +91,7 @@ class ObjectFormFieldRenderer <Container, Interface extends Record <Interface>>
 	String rootFieldName;
 
 	@Getter @Setter
-	EntityFinder <Interface> entityFinder;
+	ConsoleHelper <Interface> consoleHelper;
 
 	@Getter @Setter
 	Boolean mini;
@@ -91,7 +99,13 @@ class ObjectFormFieldRenderer <Container, Interface extends Record <Interface>>
 	@Getter @Setter
 	String optionLabel;
 
-	// implementation
+	@Getter @Setter
+	Boolean search = false;
+
+	@Getter @Setter
+	Integer size = FormField.defaultSize;
+
+	// public implementation
 
 	@Override
 	public
@@ -190,10 +204,405 @@ class ObjectFormFieldRenderer <Container, Interface extends Record <Interface>>
 							formName))
 					: interfaceValue;
 
+			// render control
+
+			if (search) {
+
+				renderFormInputSearch (
+					transaction,
+					formatWriter,
+					interfaceValue,
+					formType,
+					formName,
+					currentValue,
+					root);
+
+			} else {
+
+				renderFormInputSelect (
+					transaction,
+					formatWriter,
+					interfaceValue,
+					formType,
+					formName,
+					currentValue,
+					root);
+
+			}
+
+		}
+
+	}
+
+	@Override
+	public
+	void renderFormReset (
+			@NonNull Transaction parentTransaction,
+			@NonNull FormatWriter javascriptWriter,
+			@NonNull Container container,
+			@NonNull Optional <Interface> interfaceValue,
+			@NonNull String formName) {
+
+		try (
+
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"renderFormReset");
+
+		) {
+
+			javascriptWriter.writeLineFormat (
+				"$(\"%j\").val (\"%h\");",
+				stringFormat (
+					"#%s\\.%s",
+					formName,
+					name),
+				interfaceValue.isPresent ()
+					? integerToDecimalString (
+						interfaceValue.get ().getId ())
+					: "none");
+
+		}
+
+	}
+
+	@Override
+	public
+	boolean formValuePresent (
+			@NonNull FormFieldSubmission submission,
+			@NonNull String formName) {
+
+		return (
+
+			submission.hasParameter (
+				stringFormat (
+					"%s.%s",
+					formName,
+					name ()))
+
+		);
+
+	}
+
+	@Override
+	public
+	Either <Optional <Interface>, String> formToInterface (
+			@NonNull Transaction parentTransaction,
+			@NonNull FormFieldSubmission submission,
+			@NonNull String formName) {
+
+		try (
+
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"formToInterface");
+
+		) {
+
+			String param =
+				submission.parameter (
+					stringFormat (
+						"%s.%s",
+						formName,
+						name ()));
+
+			if (
+				stringEqualSafe (
+					param,
+					"none")
+			) {
+
+				return successResult (
+					optionalAbsent ());
+
+			} else {
+
+				Long objectId =
+					parseIntegerRequired (
+						param);
+
+				Interface interfaceValue =
+					consoleHelper.findRequired (
+						transaction,
+						objectId);
+
+				return successResult (
+					optionalOf (
+						interfaceValue));
+
+			}
+
+		}
+
+	}
+
+	@Override
+	public
+	void renderHtmlSimple (
+			@NonNull Transaction parentTransaction,
+			@NonNull FormatWriter htmlWriter,
+			@NonNull Container container,
+			@NonNull Map <String, Object> hints,
+			@NonNull Optional <Interface> interfaceValue,
+			boolean link) {
+
+		try (
+
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"renderHtmlSimple");
+
+		) {
+
+			// work out root
+
+			Optional <Record <?>> root;
+
+			if (rootFieldName != null) {
+
+				root =
+					genericCastUnchecked (
+						objectManager.dereferenceRequired (
+							transaction,
+							container,
+							rootFieldName));
+
+			} else {
+
+				root =
+					optionalAbsent ();
+
+			}
+
+			// render object path
+
+			if (
+				OptionalUtils.optionalIsPresent (
+					interfaceValue)
+			) {
+
+				htmlWriter.writeLineFormat (
+					"%h",
+					objectManager.objectPath (
+						transaction,
+						interfaceValue.get (),
+						root,
+						true,
+						false));
+
+			} else {
+
+				htmlWriter.writeLineFormat (
+					"&mdash;");
+
+			}
+
+		}
+
+	}
+
+	@Override
+	public
+	void renderHtmlTableCellList (
+			@NonNull Transaction parentTransaction,
+			@NonNull FormatWriter formatWriter,
+			@NonNull Container container,
+			@NonNull Map <String, Object> hints,
+			@NonNull Optional <Interface> interfaceValue,
+			@NonNull Boolean link,
+			@NonNull Long columnSpan) {
+
+		try (
+
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"renderHtmlTableCellList");
+
+		) {
+
+			// work out root
+
+			Optional <Record <?>> rootOptional;
+
+			if (
+
+				optionalIsPresent (
+					interfaceValue)
+
+				&& isNotNull (
+					rootFieldName)
+
+			) {
+
+				rootOptional =
+					optionalOf (
+						(Record <?>)
+						objectManager.dereferenceRequired (
+							transaction,
+							container,
+							rootFieldName));
+
+			} else {
+
+				rootOptional =
+					optionalAbsent ();
+
+			}
+
+			// render table cell
+
+			if (
+				optionalIsPresent (
+					interfaceValue)
+			) {
+
+				objectManager.writeTdForObject (
+					transaction,
+					formatWriter,
+					privChecker,
+					interfaceValue.orNull (),
+					rootOptional,
+					mini,
+					link,
+					columnSpan);
+
+			} else if (
+				moreThanOne (
+					columnSpan)
+			) {
+
+				formatWriter.writeLineFormat (
+					"<td colspan=\"%h\">—</td>",
+					integerToDecimalString (
+						columnSpan));
+
+			} else {
+
+				formatWriter.writeLineFormat (
+					"<td>—</td>");
+
+			}
+
+		}
+
+	}
+
+	@Override
+	public
+	void renderHtmlTableCellProperties (
+			@NonNull Transaction parentTransaction,
+			@NonNull FormatWriter formatWriter,
+			@NonNull Container container,
+			@NonNull Map <String, Object> hints,
+			@NonNull Optional <Interface> interfaceValue,
+			@NonNull Boolean link,
+			@NonNull Long columnSpan) {
+
+		try (
+
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"renderHtmlTableCellProperties");
+
+		) {
+
+			// work out root
+
+			Optional <Record <?>> rootOptional;
+
+			if (
+
+				optionalIsPresent (
+					interfaceValue)
+
+				&& isNotNull (
+					rootFieldName)
+
+			) {
+
+				rootOptional =
+					optionalOf (
+						(Record <?>)
+						objectManager.dereferenceRequired (
+							transaction,
+							container,
+							rootFieldName));
+
+			} else {
+
+				rootOptional =
+					optionalAbsent ();
+
+			}
+
+			// render table cell
+
+			if (
+				optionalIsPresent (
+					interfaceValue)
+			) {
+
+				objectManager.writeTdForObject (
+					transaction,
+					formatWriter,
+					privChecker,
+					interfaceValue.orNull (),
+					rootOptional,
+					mini,
+					link,
+					columnSpan);
+
+			} else if (
+				moreThanOne (
+					columnSpan)
+			) {
+
+				formatWriter.writeLineFormat (
+					"<td colspan=\"%h\">&mdash;</td>",
+					integerToDecimalString (
+						columnSpan));
+
+			} else {
+
+				formatWriter.writeLineFormat (
+					"<td>&mdash;</td>");
+
+			}
+
+		}
+
+	}
+
+	// private implementation
+
+	private
+	void renderFormInputSelect (
+			@NonNull Transaction parentTransaction,
+			@NonNull FormatWriter formatWriter,
+			@NonNull Optional <Interface> interfaceValue,
+			@NonNull FormType formType,
+			@NonNull String formName,
+			@NonNull Optional <Interface> currentValue,
+			@NonNull Optional <Record <?>> root) {
+
+		try (
+
+			NestedTransaction transaction =
+				parentTransaction.nestTransaction (
+					logContext,
+					"renderFormInputSelect");
+
+		) {
+
 			// get a list of options
 
 			Collection <Interface> allOptions =
-				entityFinder.findAllEntities (
+				consoleHelper.findNotDeleted (
 					transaction);
 
 			// filter visible options
@@ -215,13 +624,14 @@ class ObjectFormFieldRenderer <Container, Interface extends Record <Interface>>
 					(
 
 						successOrElse (
-							entityFinder.getNotDeletedOrErrorCheckParents (
+							consoleHelper.getNotDeletedOrErrorCheckParents (
 								transaction,
 								item),
 							error -> true)
 
 						&& objectManager.canView (
 							transaction,
+							privChecker,
 							item)
 
 					) || (
@@ -230,7 +640,7 @@ class ObjectFormFieldRenderer <Container, Interface extends Record <Interface>>
 							interfaceValue)
 
 						&& referenceEqualWithClass (
-							entityFinder.entityClass (),
+							consoleHelper.objectClass (),
 							item,
 							interfaceValue.get ())
 
@@ -370,343 +780,97 @@ class ObjectFormFieldRenderer <Container, Interface extends Record <Interface>>
 
 	}
 
-	@Override
-	public
-	void renderFormReset (
+	private
+	void renderFormInputSearch (
 			@NonNull Transaction parentTransaction,
-			@NonNull FormatWriter javascriptWriter,
-			@NonNull Container container,
+			@NonNull FormatWriter formatWriter,
 			@NonNull Optional <Interface> interfaceValue,
-			@NonNull String formName) {
+			@NonNull FormType formType,
+			@NonNull String formName,
+			@NonNull Optional <Interface> currentValue,
+			@NonNull Optional <Record <?>> rootOptional) {
 
 		try (
 
 			NestedTransaction transaction =
 				parentTransaction.nestTransaction (
 					logContext,
-					"renderFormReset");
+					"renderFormInputSearch");
 
 		) {
 
-			javascriptWriter.writeLineFormat (
-				"$(\"%j\").val (\"%h\");",
-				stringFormat (
-					"#%s\\.%s",
-					formName,
-					name),
+			formatWriter.writeLineFormat (
+				"<input",
+				" type=\"hidden\"",
+				" id=\"%h.%h\"",
+				formName,
+				name,
+				" name=\"%h.%h\"",
+				formName,
+				name,
+				" value=\"%h\"",
 				interfaceValue.isPresent ()
 					? integerToDecimalString (
 						interfaceValue.get ().getId ())
-					: "none");
+					: "none",
+				">");
 
-		}
+			formatWriter.writeIndent ();
 
-	}
-
-	@Override
-	public
-	boolean formValuePresent (
-			@NonNull FormFieldSubmission submission,
-			@NonNull String formName) {
-
-		return (
-
-			submission.hasParameter (
-				stringFormat (
-					"%s.%s",
-					formName,
-					name ()))
-
-		);
-
-	}
-
-	@Override
-	public
-	Either <Optional <Interface>, String> formToInterface (
-			@NonNull Transaction parentTransaction,
-			@NonNull FormFieldSubmission submission,
-			@NonNull String formName) {
-
-		try (
-
-			NestedTransaction transaction =
-				parentTransaction.nestTransaction (
-					logContext,
-					"formToInterface");
-
-		) {
-
-			String param =
-				submission.parameter (
-					stringFormat (
-						"%s.%s",
-						formName,
-						name ()));
-
-			if (
-				stringEqualSafe (
-					param,
-					"none")
-			) {
-
-				return successResult (
-					optionalAbsent ());
-
-			} else {
-
-				Long objectId =
-					parseIntegerRequired (
-						param);
-
-				Interface interfaceValue =
-					entityFinder.findEntity (
-						transaction,
-						objectId);
-
-				return successResult (
-					optionalOf (
-						interfaceValue));
-
-			}
-
-		}
-
-	}
-
-	@Override
-	public
-	void renderHtmlSimple (
-			@NonNull Transaction parentTransaction,
-			@NonNull FormatWriter htmlWriter,
-			@NonNull Container container,
-			@NonNull Map <String, Object> hints,
-			@NonNull Optional <Interface> interfaceValue,
-			boolean link) {
-
-		try (
-
-			NestedTransaction transaction =
-				parentTransaction.nestTransaction (
-					logContext,
-					"renderHtmlSimple");
-
-		) {
-
-			// work out root
-
-			Optional <Record <?>> root;
-
-			if (rootFieldName != null) {
-
-				root =
-					genericCastUnchecked (
-						objectManager.dereferenceRequired (
-							transaction,
-							container,
-							rootFieldName));
-
-			} else {
-
-				root =
-					optionalAbsent ();
-
-			}
-
-			// render object path
-
-			if (
-				OptionalUtils.optionalIsPresent (
-					interfaceValue)
-			) {
-
-				htmlWriter.writeLineFormat (
-					"%h",
-					objectManager.objectPath (
-						transaction,
-						interfaceValue.get (),
-						root,
-						true,
-						false));
-
-			} else {
-
-				htmlWriter.writeLineFormat (
-					"&mdash;");
-
-			}
-
-		}
-
-	}
-
-	@Override
-	public
-	void renderHtmlTableCellList (
-			@NonNull Transaction parentTransaction,
-			@NonNull FormatWriter formatWriter,
-			@NonNull Container container,
-			@NonNull Map <String, Object> hints,
-			@NonNull Optional <Interface> interfaceValue,
-			@NonNull Boolean link,
-			@NonNull Long columnSpan) {
-
-		try (
-
-			NestedTransaction transaction =
-				parentTransaction.nestTransaction (
-					logContext,
-					"renderHtmlTableCellList");
-
-		) {
-
-			// work out root
-
-			Optional <Record <?>> rootOptional;
-
-			if (
-
-				optionalIsPresent (
-					interfaceValue)
-
-				&& isNotNull (
-					rootFieldName)
-
-			) {
-
-				rootOptional =
-					optionalOf (
-						(Record <?>)
-						objectManager.dereferenceObsolete (
-							transaction,
-							container,
-							rootFieldName));
-
-			} else {
-
-				rootOptional =
-					optionalAbsent ();
-
-			}
-
-			// render table cell
+			formatWriter.writeLineFormat (
+				"<input",
+				" type=\"text\"",
+				" id=\"%h.%h.search\"",
+				formName,
+				name,
+				" class=\"form-object-search-field\"",
+				" size=\"%h\"",
+				integerToDecimalString (
+					size),
+				" data-search-field-id=\"%h.%h\"",
+				formName,
+				name,
+				" data-search-object-type-id=\"%h\"",
+				integerToDecimalString (
+					consoleHelper.objectTypeId ()));
 
 			if (
 				optionalIsPresent (
-					interfaceValue)
+					rootOptional)
 			) {
 
-				objectManager.writeTdForObject (
-					transaction,
-					formatWriter,
-					interfaceValue.orNull (),
-					rootOptional,
-					mini,
-					link,
-					columnSpan);
+				Record <?> root =
+					optionalGetRequired (
+						rootOptional);
 
-			} else if (
-				moreThanOne (
-					columnSpan)
-			) {
+				ConsoleHelper <?> rootHelper =
+					objectManager.consoleHelperForObjectRequired (
+						genericCastUnchecked (
+							root));
 
-				formatWriter.writeLineFormat (
-					"<td colspan=\"%h\">—</td>",
+				formatWriter.writeFormat (
+					" data-search-root-object-type-id=\"%h\"",
 					integerToDecimalString (
-						columnSpan));
-
-			} else {
-
-				formatWriter.writeLineFormat (
-					"<td>—</td>");
-
-			}
-
-		}
-
-	}
-
-	@Override
-	public
-	void renderHtmlTableCellProperties (
-			@NonNull Transaction parentTransaction,
-			@NonNull FormatWriter formatWriter,
-			@NonNull Container container,
-			@NonNull Map <String, Object> hints,
-			@NonNull Optional <Interface> interfaceValue,
-			@NonNull Boolean link,
-			@NonNull Long columnSpan) {
-
-		try (
-
-			NestedTransaction transaction =
-				parentTransaction.nestTransaction (
-					logContext,
-					"renderHtmlTableCellProperties");
-
-		) {
-
-			// work out root
-
-			Optional <Record <?>> rootOptional;
-
-			if (
-
-				optionalIsPresent (
-					interfaceValue)
-
-				&& isNotNull (
-					rootFieldName)
-
-			) {
-
-				rootOptional =
-					optionalOf (
-						(Record <?>)
-						objectManager.dereferenceObsolete (
-							transaction,
-							container,
-							rootFieldName));
-
-			} else {
-
-				rootOptional =
-					optionalAbsent ();
-
-			}
-
-			// render table cell
-
-			if (
-				optionalIsPresent (
-					interfaceValue)
-			) {
-
-				objectManager.writeTdForObject (
-					transaction,
-					formatWriter,
-					interfaceValue.orNull (),
-					rootOptional,
-					mini,
-					link,
-					columnSpan);
-
-			} else if (
-				moreThanOne (
-					columnSpan)
-			) {
-
-				formatWriter.writeLineFormat (
-					"<td colspan=\"%h\">&mdash;</td>",
+						rootHelper.objectTypeId ()),
+					" data-search-root-object-id=\"%h\"",
 					integerToDecimalString (
-						columnSpan));
-
-			} else {
-
-				formatWriter.writeLineFormat (
-					"<td>&mdash;</td>");
+						root.getId ()));
 
 			}
+
+			formatWriter.writeFormat (
+				" value=\"%h\"",
+				ifPresentThenElse (
+					interfaceValue,
+					() -> objectManager.objectPathMini (
+						transaction,
+						optionalGetRequired (
+							interfaceValue),
+						rootOptional),
+					() -> ""),
+				">");
+
+			formatWriter.writeNewline ();
 
 		}
 

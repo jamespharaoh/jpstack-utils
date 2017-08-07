@@ -149,6 +149,7 @@ class SimpleConsoleContext
 	public
 	void initContext (
 			@NonNull Transaction parentTransaction,
+			@NonNull UserPrivChecker privChecker,
 			@NonNull PathSupply pathParts,
 			@NonNull ConsoleContextStuff contextStuff) {
 
@@ -236,6 +237,7 @@ class SimpleConsoleContext
 
 				parentContext.initContext (
 					transaction,
+					privChecker,
 					pathParts,
 					contextStuff);
 
@@ -247,6 +249,7 @@ class SimpleConsoleContext
 
 				consoleManager.runPostProcessors (
 					transaction,
+					privChecker,
 					postProcessorName (),
 					contextStuff);
 

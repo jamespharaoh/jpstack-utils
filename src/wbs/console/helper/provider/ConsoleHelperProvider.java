@@ -1,6 +1,7 @@
 package wbs.console.helper.provider;
 
 import wbs.console.context.ConsoleContextStuff;
+import wbs.console.priv.UserPrivChecker;
 
 import wbs.framework.database.Transaction;
 import wbs.framework.entity.record.Record;
@@ -30,6 +31,7 @@ interface ConsoleHelperProvider <
 
 	boolean canView (
 			Transaction parentTransaction,
+			UserPrivChecker privChecker,
 			RecordType object);
 
 	RecordType lookupObject (
@@ -38,10 +40,14 @@ interface ConsoleHelperProvider <
 
 	void postProcess (
 			Transaction parentTransaction,
+			UserPrivChecker privChecker,
 			ConsoleContextStuff contextStuff);
 
 	boolean canCreateIn (
 			Transaction parentTransaction,
+			UserPrivChecker privChecker,
 			Record <?> parent);
+
+	boolean canSearch ();
 
 }

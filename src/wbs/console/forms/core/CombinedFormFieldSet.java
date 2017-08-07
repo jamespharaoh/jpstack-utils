@@ -8,6 +8,7 @@ import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
 import static wbs.utils.etc.TypeUtils.genericCastUnchecked;
 
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -20,6 +21,7 @@ import lombok.NonNull;
 
 import wbs.console.forms.types.FormField;
 import wbs.console.forms.types.FormItem;
+import wbs.console.html.HtmlLink;
 import wbs.console.html.ScriptRef;
 
 public
@@ -119,7 +121,31 @@ class CombinedFormFieldSet <Container>
 					formItem.scriptRefs ().stream ())
 
 			.collect (
-				Collectors.toSet ())
+				Collectors.toCollection (
+					LinkedHashSet::new))
+
+		;
+
+	}
+
+	@Override
+	public
+	Set <HtmlLink> styles () {
+
+		return members.stream ()
+
+			.flatMap (
+				member ->
+					Streams.stream (
+						member.formItems ()))
+
+			.flatMap (
+				formItem ->
+					formItem.styles ().stream ())
+
+			.collect (
+				Collectors.toCollection (
+					LinkedHashSet::new))
 
 		;
 

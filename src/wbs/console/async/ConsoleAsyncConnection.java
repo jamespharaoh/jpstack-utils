@@ -1,5 +1,10 @@
 package wbs.console.async;
 
+import static wbs.utils.etc.OptionalUtils.optionalGetRequired;
+import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
+import static wbs.utils.etc.TypeUtils.classEqualSafe;
+import static wbs.utils.etc.TypeUtils.dynamicCastRequired;
+import static wbs.utils.etc.TypeUtils.genericCastUnchecked;
 import static wbs.utils.time.TimeUtils.shorterThan;
 import static wbs.web.utils.JsonUtils.jsonEncode;
 import static wbs.web.utils.JsonUtils.jsonObjectGetInteger;
@@ -7,6 +12,7 @@ import static wbs.web.utils.JsonUtils.jsonObjectGetObject;
 import static wbs.web.utils.JsonUtils.jsonObjectGetString;
 import static wbs.web.utils.JsonUtils.jsonObjectParse;
 
+import com.google.common.base.Optional;
 import com.google.gson.JsonObject;
 
 import lombok.Getter;
@@ -22,8 +28,8 @@ import wbs.console.session.UserSessionVerifyLogic;
 import wbs.framework.component.annotations.ClassSingletonDependency;
 import wbs.framework.component.annotations.PrototypeComponent;
 import wbs.framework.component.annotations.SingletonDependency;
-import wbs.framework.database.NestedTransaction;
-import wbs.framework.database.Transaction;
+import wbs.framework.data.tools.DataFromJson;
+import wbs.framework.data.tools.DataToJson;
 import wbs.framework.logging.LogContext;
 import wbs.framework.logging.OwnedTaskLogger;
 import wbs.framework.logging.TaskLogger;
@@ -101,7 +107,12 @@ class ConsoleAsyncConnection
 						messageJson,
 						"endpoint");
 
-				JsonObject payload =
+				String messageId =
+					jsonObjectGetString (
+						messageJson,
+						"messageId");
+
+				JsonObject payloadJson =
 					jsonObjectGetObject (
 						messageJson,
 						"payload");
@@ -124,9 +135,32 @@ class ConsoleAsyncConnection
 
 				}
 
-				ConsoleAsyncEndpoint asyncEndpoint =
+				ConsoleAsyncEndpoint <?> asyncEndpoint =
 					consoleAsyncManager.asyncEndpointForPathRequired (
 						endpointPath);
+
+				Object payloadObject;
+
+				if (
+					classEqualSafe (
+						asyncEndpoint.requestClass (),
+						JsonObject.class)
+				) {
+
+					payloadObject =
+						payloadJson;
+
+				} else {
+
+					DataFromJson dataFromJson =
+						new DataFromJson ();
+
+					payloadObject =
+						dataFromJson.fromJson (
+							asyncEndpoint.requestClass (),
+							payloadJson);
+
+				}
 
 				ConnectionHandleImplementation connectionHandle =
 					new ConnectionHandleImplementation ()
@@ -134,11 +168,55 @@ class ConsoleAsyncConnection
 					.endpointPath (
 						endpointPath);
 
-				asyncEndpoint.message (
-					taskLogger,
-					connectionHandle,
-					userId,
-					payload);
+				Optional <?> responseObjectOptional =
+					asyncEndpoint.message (
+						taskLogger,
+						connectionHandle,
+						userId,
+						genericCastUnchecked (
+							payloadObject));
+
+				if (
+					optionalIsPresent (
+						responseObjectOptional)
+				) {
+
+					Object responseObject =
+						optionalGetRequired (
+							responseObjectOptional);
+
+					JsonObject responseJson;
+
+					if (
+						classEqualSafe (
+							responseObject.getClass (),
+							JsonObject.class)
+					) {
+
+						responseJson =
+							dynamicCastRequired (
+								JsonObject.class,
+								responseObject);
+
+					} else {
+
+						DataToJson dataToJson =
+							new DataToJson ();
+
+						responseJson =
+							dynamicCastRequired (
+								JsonObject.class,
+								dataToJson.toJson (
+									responseObject));
+
+					}
+
+					connectionHandle.send (
+						taskLogger,
+						responseJson,
+						messageId);
+
+				}
 
 			} catch (Exception exception) {
 
@@ -255,14 +333,15 @@ class ConsoleAsyncConnection
 		@Override
 		public
 		void send (
-				@NonNull Transaction parentTransaction,
-				@NonNull JsonObject payload) {
+				@NonNull TaskLogger parentTaskLogger,
+				@NonNull JsonObject payload,
+				@NonNull Optional <String> messageIdOptional) {
 
 			try (
 
-				NestedTransaction transaction =
-					parentTransaction.nestTransaction (
-						logContext,
+				OwnedTaskLogger taskLogger =
+					logContext.nestTaskLogger (
+						parentTaskLogger,
 						"send");
 
 			) {
@@ -278,12 +357,24 @@ class ConsoleAsyncConnection
 					"payload",
 					payload);
 
+				if (
+					optionalIsPresent (
+						messageIdOptional)
+				) {
+
+					message.addProperty (
+						"messageId",
+						optionalGetRequired (
+							messageIdOptional));
+
+				}
+
 				String messageJson =
 					jsonEncode (
 						message);
 
 				connectionProvider.sendMessage (
-					transaction,
+					taskLogger,
 					messageJson);
 
 			}

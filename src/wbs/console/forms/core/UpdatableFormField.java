@@ -52,6 +52,7 @@ import wbs.console.forms.types.FormFieldValueValidator;
 import wbs.console.forms.types.FormType;
 import wbs.console.forms.types.FormUpdateResult;
 import wbs.console.helper.manager.ConsoleObjectManager;
+import wbs.console.html.HtmlLink;
 import wbs.console.html.ScriptRef;
 import wbs.console.priv.UserPrivChecker;
 
@@ -132,6 +133,10 @@ class UpdatableFormField <Container, Generic, Native, Interface>
 		new LinkedHashSet<> ();
 
 	@Getter @Setter
+	Set <HtmlLink> styles =
+		new LinkedHashSet<> ();
+
+	@Getter @Setter
 	FormFieldAccessor <Container, Native> accessor;
 
 	@Getter @Setter
@@ -148,7 +153,7 @@ class UpdatableFormField <Container, Generic, Native, Interface>
 
 	@Getter @Setter
 	Map <String, FormFieldInterfaceMapping <Container, Generic, String>>
-	shortcutInterfaceMappings;
+		shortcutInterfaceMappings;
 
 	@Getter @Setter
 	FormFieldInterfaceMapping <Container, Generic, String> csvMapping;
@@ -158,6 +163,30 @@ class UpdatableFormField <Container, Generic, Native, Interface>
 
 	@Getter @Setter
 	FormFieldUpdateHook <Container, Generic, Native> updateHook;
+
+	// property accessors
+
+	public
+	UpdatableFormField <Container, Generic, Native, Interface> addScriptRef (
+			@NonNull ScriptRef scriptRef) {
+
+		scriptRefs.add (
+			scriptRef);
+
+		return this;
+
+	}
+
+	public
+	UpdatableFormField <Container, Generic, Native, Interface> addStyle (
+			@NonNull HtmlLink style) {
+
+		styles.add (
+			style);
+
+		return this;
+
+	}
 
 	// implementation
 
