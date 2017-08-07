@@ -797,7 +797,7 @@ class ShnShopifySynchronisationWrapper <
 
 				if (numOperations > maxOperations) {
 
-					numNotCreated ++;
+					numNotUpdated ++;
 
 					return;
 
