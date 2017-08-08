@@ -82,7 +82,7 @@
 	<library name="libmatthew" type="jar" version="0.8.2"/>
 	<library name="log4j-api" type="jar" version="2.8.2" source="yes"/>
 	<library name="log4j-core" type="jar" version="2.8.2" source="yes"/>
-	<library name="lombok" type="jar" version="1.16.6" source="yes"/>
+	<library name="lombok" type="jar" version="1.16.18" source="yes"/>
 	<library name="lz4" type="jar" version="1.3.0"/>
 	<library name="management-api" type="jar" version="3.0.0-b012"/>
 	<library name="merchantsdk" type="jar" version="2.13.117" source="yes"/>

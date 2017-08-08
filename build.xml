@@ -437,6 +437,8 @@
   </target>
   <target name="just-agent-test">
     <java classname="wbs.framework.component.tools.ComponentRunner" classpathref="classpath" failonerror="true">
+      <sysproperty key="log4j2.disable.jmx" value="true"/>
+      <sysproperty key="log4j.configurationFile" value="src/log4j2.xml"/>
       <arg value="wbs-test"/>
       <arg value="wbs.test"/>
       <arg value="agent,config,data,entity,hibernate,logic,model,model-meta,object,schema,sql,utils"/>
@@ -497,6 +499,8 @@
   </target>
   <target name="just-daemon-test">
     <java classname="wbs.framework.component.tools.ComponentRunner" classpathref="classpath" failonerror="true">
+      <sysproperty key="log4j2.disable.jmx" value="true"/>
+      <sysproperty key="log4j.configurationFile" value="src/log4j2.xml"/>
       <arg value="wbs-test"/>
       <arg value="wbs.test"/>
       <arg value="config,daemon,data,entity,hibernate,logic,model,model-meta,utils,object,process-api,schema,sql"/>
@@ -625,6 +629,7 @@
   <target name="just-schema-create">
     <java classname="wbs.framework.component.tools.ComponentRunner" classpathref="classpath" failonerror="true">
       <sysproperty key="log4j2.disable.jmx" value="true"/>
+      <sysproperty key="log4j.configurationFile" value="src/log4j2.xml"/>
       <arg value="wbs-test"/>
       <arg value="wbs.test"/>
       <arg value="utils,config,data,entity,model-meta,schema,sql,schema-tool"/>
@@ -636,6 +641,7 @@
   <target name="just-model-fixtures">
     <java classname="wbs.framework.component.tools.ComponentRunner" classpathref="classpath" failonerror="true">
       <sysproperty key="log4j2.disable.jmx" value="true"/>
+      <sysproperty key="log4j.configurationFile" value="src/log4j2.xml"/>
       <arg value="wbs-test"/>
       <arg value="wbs.test"/>
       <arg value="utils,config,data,entity,schema,sql,model,model-meta,hibernate,object,logic,fixture"/>
@@ -647,6 +653,7 @@
   <target name="just-fixture-providers">
     <java classname="wbs.framework.component.tools.ComponentRunner" classpathref="classpath" failonerror="true">
       <sysproperty key="log4j2.disable.jmx" value="true"/>
+      <sysproperty key="log4j.configurationFile" value="src/log4j2.xml"/>
       <arg value="wbs-test"/>
       <arg value="wbs.test"/>
       <arg value="utils,config,data,entity,schema,sql,model,model-meta,hibernate,object,logic,fixture"/>

@@ -7,7 +7,6 @@ import javax.sql.DataSource;
 
 import org.hibernate.engine.jdbc.connections.spi.ConnectionProvider;
 
-@SuppressWarnings ("serial")
 public
 class WbsConnectionProvider
 	implements ConnectionProvider {

@@ -90,7 +90,7 @@
   <classpathentry kind="lib" path="binaries/libraries/libmatthew-jar-0.8.2.jar"/>
   <classpathentry kind="lib" path="binaries/libraries/log4j-api-jar-2.8.2.jar" sourcepath="/root/projects/wbs-platform/wbs-binaries/libraries/log4j-api-source-2.8.2.jar"/>
   <classpathentry kind="lib" path="binaries/libraries/log4j-core-jar-2.8.2.jar" sourcepath="/root/projects/wbs-platform/wbs-binaries/libraries/log4j-core-source-2.8.2.jar"/>
-  <classpathentry kind="lib" path="binaries/libraries/lombok-jar-1.16.6.jar" sourcepath="/root/projects/wbs-platform/wbs-binaries/libraries/lombok-source-1.16.6.jar"/>
+  <classpathentry kind="lib" path="binaries/libraries/lombok-jar-1.16.18.jar" sourcepath="/root/projects/wbs-platform/wbs-binaries/libraries/lombok-source-1.16.18.jar"/>
   <classpathentry kind="lib" path="binaries/libraries/lz4-jar-1.3.0.jar"/>
   <classpathentry kind="lib" path="binaries/libraries/management-api-jar-3.0.0-b012.jar"/>
   <classpathentry kind="lib" path="binaries/libraries/merchantsdk-jar-2.13.117.jar" sourcepath="/root/projects/wbs-platform/wbs-binaries/libraries/merchantsdk-source-2.13.117.jar"/>
