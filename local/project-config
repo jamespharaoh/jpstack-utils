@@ -1,0 +1,5 @@
+#!/bin/bash
+
+project_name="shopping-nation-platform"
+
+# ex: noet ts=4 filetype=bash
