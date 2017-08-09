@@ -570,7 +570,32 @@ class TimeUtils {
 	}
 
 	public static
+	String isoDateString (
+			@NonNull LocalDate date) {
+
+		return date.toString (
+			isoDateFormat);
+
+	}
+
+	public static
+	LocalDate isoDateParseRequired (
+			@NonNull String string) {
+
+		return isoDateFormat.parseLocalDate (
+			string);
+
+	}
+
+	private static
 	DateTimeFormatter isoDateTimeFormat =
+		DateTimeFormat.forPattern (
+			"yyyy-MM-dd'T'HH:mm:ss'Z'")
+
+		.withZoneUTC ();
+
+	private static
+	DateTimeFormatter isoDateFormat =
 		DateTimeFormat.forPattern (
 			"yyyy-MM-dd'T'HH:mm:ss'Z'")
 

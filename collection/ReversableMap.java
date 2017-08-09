@@ -156,7 +156,7 @@ class ReversableMap<KeyType,ValueType>
 			KeyType key,
 			ValueType value) {
 
-		if (map.containsKey (value)) {
+		if (map.containsKey (key)) {
 
 			throw new IllegalArgumentException (
 				stringFormat (
