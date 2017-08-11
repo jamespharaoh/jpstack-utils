@@ -1,7 +1,5 @@
 package wbs.utils.collection;
 
-import static wbs.utils.etc.DebugUtils.debugFormat;
-import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.etc.NumberUtils.maximumJavaInteger;
 import static wbs.utils.etc.NumberUtils.toJavaIntegerRequired;
 import static wbs.utils.etc.OptionalUtils.optionalAbsent;
@@ -70,8 +68,6 @@ class ParallelIterator <In, Out>
 			@NonNull Iterator <In> inIterator,
 			@NonNull Function <In, Out> mapFunction) {
 
-debugFormat ("CONSTRUCT");
-
 		if (
 			threads <= 1l
 			|| threads > maximumJavaInteger
@@ -114,25 +110,19 @@ debugFormat ("CONSTRUCT");
 	public
 	boolean hasNext () {
 
-debugFormat ("HAS NEXT %s", integerToDecimalString (runningTasks));
-
 		if (error) {
-debugFormat ("ERROR");
 			throw new IllegalStateException ();
 		}
 
 		if (exceptionOptional.isPresent ()) {
-debugFormat ("EXCEPTION");
 			return true;
 		}
 
 		if (nextItemOptional.isPresent ()) {
-debugFormat ("ITEM");
 			return true;
 		}
 
 		if (runningTasks == 0l) {
-debugFormat ("COMPLETE");
 			return false;
 		}
 
@@ -140,21 +130,15 @@ debugFormat ("COMPLETE");
 
 			runningTasks --;
 
-debugFormat ("WAIT");
-
 			nextItemOptional =
 				optionalOf (
 					completionService.take ().get ());
-
-debugFormat ("WAIT OVER");
 
 			startTasks ();
 
 			return runningTasks > 0l;
 
 		} catch (ExecutionException executionException) {
-
-debugFormat ("ERROR");
 
 			drainTasks ();
 
@@ -165,8 +149,6 @@ debugFormat ("ERROR");
 			return true;
 
 		} catch (InterruptedException interruptedException) {
-
-debugFormat ("INTERRUPT");
 
 			drainTasks ();
 
@@ -181,8 +163,6 @@ debugFormat ("INTERRUPT");
 	@Override
 	public
 	Out next () {
-
-debugFormat ("NEXT");
 
 		if (error) {
 			throw new IllegalStateException ();
@@ -245,40 +225,27 @@ debugFormat ("NEXT");
 	private
 	void startTasks () {
 
-debugFormat ("START");
-
 		while (
 			runningTasks < maxTasks
 			&& inIterator.hasNext ()
 		) {
 
-debugFormat ("START ONE");
-
 			In inItem =
 				inIterator.next ();
 
 			completionService.submit (
-				() -> {
-					debugFormat ("TASK START");
-					Out temp =
-						mapFunction.apply (
-							inItem);
-					debugFormat ("TASK END");
-					return temp;
-				});
+				() ->
+					mapFunction.apply (
+						inItem));
 
 			runningTasks ++;
 
 		}
 
-debugFormat ("STARTED");
-
 	}
 
 	private
 	void drainTasks () {
-
-debugFormat ("DRAIN");
 
 		executor.shutdownNow ();
 
@@ -293,8 +260,6 @@ debugFormat ("DRAIN");
 			Thread.currentThread ().interrupt ();
 
 		}
-
-debugFormat ("DRAINED");
 
 	}
 

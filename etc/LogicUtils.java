@@ -4,6 +4,7 @@ import static wbs.utils.collection.CollectionUtils.collectionIsEmpty;
 import static wbs.utils.collection.CollectionUtils.collectionIsNotEmpty;
 import static wbs.utils.etc.EnumUtils.enumEqualSafe;
 import static wbs.utils.etc.EnumUtils.enumNotEqualSafe;
+import static wbs.utils.etc.Misc.doNothing;
 import static wbs.utils.etc.Misc.shouldNeverHappen;
 import static wbs.utils.etc.NullUtils.isNotNull;
 import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
@@ -993,6 +994,7 @@ class LogicUtils {
 					retryExceptionHandler.accept (
 						attempt,
 						exception);
+
 				}
 
 				Duration pause =
@@ -1032,6 +1034,24 @@ class LogicUtils {
 		}
 
 		throw shouldNeverHappen ();
+
+	}
+
+	public static <Type>
+	Type attemptWithRetries (
+			@NonNull Long maxAttempts,
+			@NonNull Duration backoffTime,
+			@NonNull Supplier <Type> task)
+		throws InterruptedException {
+
+		return attemptWithRetries (
+			maxAttempts,
+			backoffTime,
+			task,
+			(attempt, retryException) ->
+				doNothing (),
+			(attempt, finalException) ->
+				doNothing ());
 
 	}
 
@@ -1104,6 +1124,24 @@ class LogicUtils {
 		}
 
 		throw shouldNeverHappen ();
+
+	}
+
+	public static
+	void attemptWithRetriesVoid (
+			@NonNull Long maxAttempts,
+			@NonNull Duration backoffTime,
+			@NonNull Runnable task)
+		throws InterruptedException {
+
+		attemptWithRetriesVoid (
+			maxAttempts,
+			backoffTime,
+			task,
+			(attempt, retryException) ->
+				doNothing (),
+			(attempt, finalException) ->
+				doNothing ());
 
 	}
 
