@@ -19,12 +19,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -861,6 +862,55 @@ class IterableUtils {
 			};
 
 		};
+
+	}
+
+	public static <In, Out>
+	ParallelIterable <Out> iterableMapParallel (
+			@NonNull Long threads,
+			@NonNull Long maxTasks,
+			@NonNull Iterable <In> inItems,
+			@NonNull Function <In, Out> mapFunction) {
+
+		return () ->
+			new ParallelIterator <In, Out> (
+				threads,
+				maxTasks,
+				inItems.iterator (),
+				mapFunction);
+
+	}
+
+	public static <Item>
+	void iterableForEachParallel (
+			@NonNull Long threads,
+			@NonNull Long maxTasks,
+			@NonNull Iterable <Item> inItems,
+			@NonNull Consumer <Item> function) {
+
+		try (
+
+			ParallelIterator <Item, Object> iterator =
+				new ParallelIterator <Item, Object> (
+					threads,
+					maxTasks,
+					inItems.iterator (),
+					item -> {
+
+				function.accept (
+					item);
+
+				return new Object ();
+
+			});
+
+		) {
+
+			while (iterator.hasNext ()) {
+				iterator.next ();
+			}
+
+		}
 
 	}
 
