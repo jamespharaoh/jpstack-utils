@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
@@ -866,6 +867,41 @@ class IterableUtils {
 			};
 
 		};
+
+	}
+
+	public static <Item>
+	void iterableForEach (
+			@NonNull Iterable <Item> iterable,
+			@NonNull Consumer <Item> function) {
+
+		for (
+			Item item
+				: iterable
+		) {
+
+			function.accept (
+				item);
+
+		}
+
+	}
+
+	public static <Left, Right>
+	void iterableForEach (
+			@NonNull Iterable <Pair <Left, Right>> iterable,
+			@NonNull BiConsumer <Left, Right> function) {
+
+		for (
+			Pair <Left, Right> item
+				: iterable
+		) {
+
+			function.accept (
+				item.left (),
+				item.right ());
+
+		}
 
 	}
 
