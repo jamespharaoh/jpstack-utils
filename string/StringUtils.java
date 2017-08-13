@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -465,6 +466,9 @@ class StringUtils {
 	String hyphenToCamel (
 			@NonNull String string) {
 
+		StringFormat.hyphenated.verifyAndThrow (
+			string);
+
 		return delimitedToCamel (
 			string,
 			"-");
@@ -474,6 +478,9 @@ class StringUtils {
 	public static
 	String hyphenToCamelCapitalise (
 			@NonNull String string) {
+
+		StringFormat.hyphenated.verifyAndThrow (
+			string);
 
 		return capitalise (
 			delimitedToCamel (
@@ -486,6 +493,9 @@ class StringUtils {
 	String hyphenToSpaces (
 			@NonNull String string) {
 
+		StringFormat.hyphenated.verifyAndThrow (
+			string);
+
 		return stringReplaceAllSimple (
 			"-",
 			" ",
@@ -494,8 +504,32 @@ class StringUtils {
 	}
 
 	public static
+	String hyphenToSpacesCapitalise (
+			@NonNull String string) {
+
+		return capitalise (
+			hyphenToSpaces (
+				string));
+
+	}
+
+	public static
+	String hyphenToUnderscore (
+			@NonNull CharSequence string) {
+
+		return stringReplaceAllSimple (
+			"-",
+			"_",
+			string);
+
+	}
+
+	public static
 	String underscoreToCamel (
 			@NonNull String string) {
+
+		StringFormat.snakeCase.verifyAndThrow (
+			string);
 
 		return delimitedToCamel (
 			string,
@@ -504,60 +538,63 @@ class StringUtils {
 	}
 
 	public static
-	String replaceAll (
-			@NonNull String source,
-			@NonNull String find,
-			@NonNull String replaceWith) {
-
-		return source.replaceAll (
-			Pattern.quote (
-				find),
-			replaceWith);
-
-	}
-
-	public static
 	String underscoreToHyphen (
-			@NonNull String string) {
+			@NonNull String input) {
 
-		return replaceAll (
-			string,
+		StringFormat.snakeCase.verifyParameterAndThrow (
+			"input",
+			input);
+
+		return stringReplaceAllSimple (
 			"_",
-			"-");
+			"-",
+			input);
 
 	}
 
 	public static
 	String underscoreToSpaces (
-			@NonNull String string) {
+			@NonNull String input) {
 
-		return replaceAll (
-			string,
+		StringFormat.snakeCase.verifyParameterAndThrow (
+			"input",
+			input);
+
+		return stringReplaceAllSimple (
 			"_",
-			" ");
+			" ",
+			input);
 
 	}
 
 	public static
 	String underscoreToSpacesCapitalise (
-			@NonNull String string) {
+			@NonNull String input) {
+
+		StringFormat.snakeCase.verifyParameterAndThrow (
+			"input",
+			input);
 
 		return capitalise (
-			replaceAll (
-				string,
+			stringReplaceAllSimple (
 				"_",
-				" "));
+				" ",
+				input));
 
 	}
 
 	public static
 	String hyphenToUnderscore (
-			@NonNull String string) {
+			@NonNull String input) {
 
-		return replaceAll (
-			string,
+		StringFormat.hyphenated.verifyParameterAndThrow (
+			"input",
+			input);
+
+		return stringReplaceAllSimple (
 			"-",
-			"_");
+			"_",
+			input);
 
 	}
 
@@ -593,10 +630,21 @@ class StringUtils {
 
 	public static
 	String camelToUnderscore (
-			String string) {
+			@NonNull String string) {
 
 		return camelToDelimited (
 			string,
+			"_");
+
+	}
+
+	public static
+	String camelToUnderscoreUncapitalise (
+			@NonNull CharSequence string) {
+
+		return camelToDelimited (
+			uncapitalise (
+				string),
 			"_");
 
 	}
@@ -612,8 +660,24 @@ class StringUtils {
 	}
 
 	public static
+	Function <String, String> camelToHyphen () {
+		return StringUtils::camelToHyphen;
+	}
+
+	public static
+	String camelToHyphenUncapitalise (
+			@NonNull CharSequence string) {
+
+		return camelToDelimited (
+			uncapitalise (
+				string),
+			"-");
+
+	}
+
+	public static
 	String camelToSpaces (
-			String string) {
+			@NonNull CharSequence string) {
 
 		return camelToDelimited (
 			string,
@@ -624,6 +688,9 @@ class StringUtils {
 	public static
 	List <String> camelToList (
 			@NonNull String string) {
+
+		StringFormat.camelCase.verifyAndThrow (
+			string);
 
 		ImmutableList.Builder <String> listBuilder =
 			ImmutableList.builder ();
@@ -707,11 +774,11 @@ class StringUtils {
 
 	public static
 	String camelToDelimited (
-			String string,
-			String delimiter) {
+			@NonNull CharSequence string,
+			@NonNull CharSequence delimiter) {
 
-		if (string == null)
-			return null;
+		StringFormat.camelCase.verifyAndThrow (
+			string);
 
 		StringBuilder stringBuilder =
 			new StringBuilder (
@@ -1118,6 +1185,26 @@ class StringUtils {
 
 			return singular + "es";
 
+		} else if (
+
+			stringEndsWithSimple (
+				"ey",
+				singular)
+
+		) {
+
+			return singular + "s";
+
+		} else if (
+
+			stringEndsWithSimple (
+				"y",
+				singular)
+
+		) {
+
+			return singular + "ies";
+
 		} else {
 
 			return singular + "s";
@@ -1221,16 +1308,25 @@ class StringUtils {
 
 	public static
 	String uncapitalise (
-			@NonNull String string) {
+			@NonNull CharSequence string) {
 
 		if (string.length () == 0)
 			return "";
 
-		return (
+		StringBuilder stringBuilder =
+			new StringBuilder (
+				string.length ());
+
+		stringBuilder.append (
 			Character.toLowerCase (
-				string.charAt (0))
-			+ string.substring (1)
-		);
+				string.charAt (0)));
+
+		stringBuilder.append (
+			string.subSequence (
+				1,
+				string.length ()));
+
+		return stringBuilder.toString ();
 
 	}
 
@@ -1701,14 +1797,14 @@ class StringUtils {
 
 	public static
 	String stringReplaceAllSimple (
-			@NonNull String from,
-			@NonNull String to,
-			@NonNull String subject) {
+			@NonNull CharSequence from,
+			@NonNull CharSequence to,
+			@NonNull CharSequence subject) {
 
-		return subject.replaceAll (
+		return subject.toString ().replaceAll (
 			Pattern.quote (
-				from),
-			to);
+				from.toString ()),
+			to.toString ());
 
 	}
 
@@ -2012,6 +2108,27 @@ class StringUtils {
 				suffix,
 				input));
 
+	}
+
+	public static
+	String stringIntern (
+			@NonNull String string) {
+
+		return string.intern ();
+
+	}
+
+	public static
+	String stringIntern (
+			@NonNull CharSequence charSequence) {
+
+		return charSequence.toString ().intern ();
+
+	}
+
+	public static
+	Function <String, String> stringIntern () {
+		return StringUtils::stringIntern;
 	}
 
 }

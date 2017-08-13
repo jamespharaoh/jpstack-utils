@@ -9,6 +9,8 @@ import static wbs.utils.etc.OptionalUtils.optionalIsNotPresent;
 import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
 import static wbs.utils.etc.OptionalUtils.optionalOf;
 import static wbs.utils.etc.TypeUtils.dynamicCast;
+import static wbs.utils.etc.TypeUtils.genericCastUnchecked;
+import static wbs.utils.etc.TypeUtils.isInstanceOf;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -57,24 +59,15 @@ class IterableUtils {
 
 	}
 
-	public static <InputType, OutputType>
-	Iterable <OutputType> iterableMap (
-			@NonNull Iterable <? extends InputType> iterable,
-			@NonNull Function <
-				? super InputType,
-				OutputType
-			> mapFunction) {
+	public static <In, Out>
+	Iterable <Out> iterableMap (
+			@NonNull Iterable <? extends In> iterable,
+			@NonNull Function <? super In, ? extends Out> mapFunction) {
 
 		return () ->
-			Streams.stream (
-				iterable)
-
-			.map (
-				item ->
-					mapFunction.apply (
-						item))
-
-			.iterator ();
+			new MapIterator <In, Out> (
+				iterable.iterator (),
+				mapFunction);
 
 	}
 
@@ -100,26 +93,28 @@ class IterableUtils {
 
 	}
 
-	public static <InLeftType, InRightType, OutType>
-	Iterable <OutType> iterableMap (
-			@NonNull Iterable <Pair <InLeftType, InRightType>> iterable,
+	public static <InLeft, InRight, Out>
+	Iterable <Out> iterableMap (
+			@NonNull Iterable <? extends Pair <
+				? extends InLeft,
+				? extends InRight
+			>> iterable,
 			@NonNull BiFunction <
-				? super InLeftType,
-				? super InRightType,
-				OutType
+				? super InLeft,
+				? super InRight,
+				? extends Out
 			> mapFunction) {
 
 		return () ->
-			Streams.stream (
-				iterable)
-
-			.map (
+			new MapIterator <Pair <
+				? extends InLeft,
+				? extends InRight>,
+			Out> (
+				iterable.iterator (),
 				pair ->
 					mapFunction.apply (
 						pair.left (),
-						pair.right ()))
-
-			.iterator ();
+						pair.right ()));
 
 	}
 
@@ -513,7 +508,7 @@ class IterableUtils {
 	public static <ItemType>
 	ItemType iterableFindExactlyOneRequired (
 			@NonNull Iterable <ItemType> iterable,
-			@NonNull Predicate <ItemType> predicate) {
+			@NonNull Predicate <? super ItemType> predicate) {
 
 		Optional <ItemType> value =
 			optionalAbsent ();
@@ -554,6 +549,19 @@ class IterableUtils {
 
 		return optionalGetRequired (
 			value);
+
+	}
+
+	public static <ItemType>
+	ItemType iterableFindExactlyOneRequired (
+			@NonNull Iterable <?> iterable,
+			@NonNull Class <ItemType> itemClass) {
+
+		return genericCastUnchecked (
+			iterableFindExactlyOneRequired (
+				iterable,
+				isInstanceOf (
+					itemClass)));
 
 	}
 

@@ -10,6 +10,7 @@ import static wbs.utils.etc.OptionalUtils.optionalAbsent;
 import static wbs.utils.etc.OptionalUtils.optionalFromNullable;
 import static wbs.utils.etc.OptionalUtils.optionalGetRequired;
 import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
+import static wbs.utils.etc.OptionalUtils.optionalMapRequired;
 import static wbs.utils.etc.OptionalUtils.optionalOf;
 import static wbs.utils.etc.OptionalUtils.optionalOrThrow;
 import static wbs.utils.string.StringUtils.joinWithCommaAndSpace;
@@ -26,6 +27,7 @@ import java.lang.reflect.WildcardType;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -37,11 +39,13 @@ import lombok.NonNull;
 
 import wbs.framework.codegen.JavaImportRegistry;
 
+import wbs.utils.exception.RuntimeClassNotFoundException;
 import wbs.utils.exception.RuntimeIllegalAccessException;
 import wbs.utils.exception.RuntimeInstantiationException;
 import wbs.utils.exception.RuntimeInvocationTargetException;
 import wbs.utils.exception.RuntimeNoSuchMethodException;
 import wbs.utils.exception.RuntimeSecurityException;
+import wbs.utils.io.SafeInputStream;
 
 public
 class TypeUtils {
@@ -55,6 +59,16 @@ class TypeUtils {
 
 		return theClass.isInstance (
 			object);
+
+	}
+
+	public static <Item>
+	Predicate <Item> isInstanceOf (
+			@NonNull Class <?> theClass) {
+
+		return object ->
+			theClass.isInstance (
+				object);
 
 	}
 
@@ -224,13 +238,13 @@ class TypeUtils {
 
 	public static
 	Optional <Class <?>> classForName (
-			@NonNull String className) {
+			@NonNull CharSequence className) {
 
 		try {
 
-			return Optional.<Class<?>>of (
+			return optionalOf (
 				Class.forName (
-					className));
+					className.toString ()));
 
 		} catch (ClassNotFoundException exception) {
 
@@ -242,35 +256,35 @@ class TypeUtils {
 
 	public static
 	Optional <Class <?>> classForName (
-			@NonNull String packageName,
-			@NonNull String className) {
+			@NonNull CharSequence packageName,
+			@NonNull CharSequence className) {
 
 		try {
 
-			return Optional.<Class<?>>of (
+			return optionalOf (
 				Class.forName (
 					packageName + "." + className));
 
 		} catch (ClassNotFoundException exception) {
 
-			return Optional.absent ();
+			return optionalAbsent ();
 
 		}
 
 	}
 
 	public static
-	Class<?> classForNameRequired (
-			@NonNull String className) {
+	Class <?> classForNameRequired (
+			@NonNull CharSequence className) {
 
 		try {
 
 			return Class.forName (
-				className);
+				className.toString ());
 
 		} catch (ClassNotFoundException exception) {
 
-			throw new RuntimeException (
+			throw new RuntimeClassNotFoundException (
 				exception);
 
 		}
@@ -279,8 +293,8 @@ class TypeUtils {
 
 	public static
 	Class<?> classForNameRequired (
-			@NonNull String packageName,
-			@NonNull String className) {
+			@NonNull CharSequence packageName,
+			@NonNull CharSequence className) {
 
 		try {
 
@@ -289,7 +303,7 @@ class TypeUtils {
 
 		} catch (ClassNotFoundException exception) {
 
-			throw new RuntimeException (
+			throw new RuntimeClassNotFoundException (
 				exception);
 
 		}
@@ -298,7 +312,7 @@ class TypeUtils {
 
 	public static
 	Optional <Class <?>> classForNameFormat (
-			@NonNull String ... arguments) {
+			@NonNull CharSequence ... arguments) {
 
 		return classForName (
 			stringFormatArray (
@@ -308,7 +322,7 @@ class TypeUtils {
 
 	public static
 	Class <?> classForNameFormatRequired (
-			@NonNull String ... arguments) {
+			@NonNull CharSequence ... arguments) {
 
 		return classForNameRequired (
 			stringFormatArray (
@@ -327,37 +341,98 @@ class TypeUtils {
 
 	}
 
+	public static
+	boolean classExists (
+			@NonNull CharSequence className) {
+
+		try {
+
+			Class.forName (
+				className.toString ());
+
+			return true;
+
+		} catch (ClassNotFoundException classNotFoundException) {
+
+			return false;
+
+		}
+
+	}
+
+	public static
+	boolean classDoesNotExist (
+			@NonNull CharSequence className) {
+
+		try {
+
+			Class.forName (
+				className.toString ());
+
+			return false;
+
+		} catch (ClassNotFoundException classNotFoundException) {
+
+			return true;
+
+		}
+
+	}
+
 	// ---------- class names
 
 	public static
-	String classNameSimple (
+	ClassName className (
+			@NonNull CharSequence className) {
+
+		return new ClassName (
+			className);
+
+	}
+
+	public static
+	ClassName classNameFormat (
+			@NonNull CharSequence ... arguments) {
+
+		return new ClassName (
+			stringFormatArray (
+				arguments));
+
+	}
+
+	public static
+	ClassName classNameSimple (
 			@NonNull Class <?> theClass) {
 
-		return theClass.getSimpleName ();
+		return new ClassName (
+			theClass.getSimpleName ());
 
 	}
 
 	public static
-	String objectClassNameSimple (
+	ClassName objectClassNameSimple (
 			@NonNull Object object) {
 
-		return object.getClass ().getSimpleName ();
+		return new ClassName (
+			object.getClass ().getSimpleName ());
 
 	}
 
 	public static
-	String classNameFull (
+	ClassName classNameFull (
 			@NonNull Class <?> theClass) {
 
-		return theClass.getName ();
+		return new ClassName (
+			theClass.getName ());
 
 	}
 
 	public static
-	String objectClassNameFull (
+	ClassName objectClassNameFull (
 			@NonNull Object object) {
 
-		return object.getClass ().getName ();
+		return new ClassName (
+			object.getClass ().getName ());
 
 	}
 
@@ -431,7 +506,7 @@ class TypeUtils {
 
 		} else {
 
-			throw new RuntimeException (
+			throw new IllegalArgumentException (
 				stringFormat (
 					"Don't know how to handle a %s",
 					type.getClass ().getSimpleName ()));
@@ -742,6 +817,21 @@ class TypeUtils {
 
 		return ImmutableList.copyOf (
 			interfacesBuilder.build ());
+
+	}
+
+	// ---------- classpath resources
+
+	public static
+	Optional <SafeInputStream> classpathResource (
+			@NonNull ClassLoader classLoader,
+			@NonNull String resourceName) {
+
+		return optionalMapRequired (
+			optionalFromNullable (
+				classLoader.getResourceAsStream (
+					resourceName)),
+			SafeInputStream::new);
 
 	}
 

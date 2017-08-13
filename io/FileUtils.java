@@ -20,11 +20,11 @@ class FileUtils {
 
 	public static
 	boolean fileExists (
-			@NonNull String filename) {
+			@NonNull CharSequence filename) {
 
 		File file =
 			new File (
-				filename);
+				filename.toString ());
 
 		return file.exists ();
 
@@ -32,7 +32,7 @@ class FileUtils {
 
 	public static
 	boolean fileExistsFormat (
-			@NonNull String ... arguments) {
+			@NonNull CharSequence ... arguments) {
 
 		return fileExists (
 			stringFormatArray (
