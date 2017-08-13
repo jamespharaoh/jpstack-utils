@@ -816,6 +816,33 @@ class Misc {
 	}
 
 	public static
+	long sum (
+			long value0,
+			long value1,
+			long value2,
+			long value3,
+			long value4,
+			long value5) {
+
+		return value0 + value1 + value2 + value3 + value4 + value5;
+
+	}
+
+	public static
+	long sum (
+			long value0,
+			long value1,
+			long value2,
+			long value3,
+			long value4,
+			long value5,
+			long value6) {
+
+		return value0 + value1 + value2 + value3 + value4 + value5 + value6;
+
+	}
+
+	public static
 	URL stringToUrl (
 			String urlString) {
 
