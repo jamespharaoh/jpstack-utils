@@ -1286,7 +1286,7 @@ class OptionalUtils {
 
 	public static <Type>
 	Optional <Type> optionalOf (
-			Type value) {
+			@NonNull Type value) {
 
 		return Optional.of (
 			value);
