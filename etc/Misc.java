@@ -766,6 +766,25 @@ class Misc {
 
 	public static
 	long sum (
+			@NonNull Iterable <Long> values) {
+
+		long total = 0l;
+
+		for (
+			Long value
+				: values
+		) {
+
+			total += value;
+
+		}
+
+		return total;
+
+	}
+
+	public static
+	long sum (
 			long value0,
 			long value1) {
 
