@@ -1060,8 +1060,8 @@ class LogicUtils {
 			@NonNull Long maxAttempts,
 			@NonNull Duration backoffTime,
 			@NonNull Runnable task,
-			@NonNull BiConsumer <Long, Exception> retryExceptionHandler,
-			@NonNull BiConsumer <Long, Exception> finalExceptionHandler)
+			@NonNull BiConsumer <Long, RuntimeException> retryExceptionHandler,
+			@NonNull BiConsumer <Long, RuntimeException> finalExceptionHandler)
 		throws InterruptedException {
 
 		for (
@@ -1078,7 +1078,7 @@ class LogicUtils {
 
 					return;
 
-				} catch (Exception exception) {
+				} catch (RuntimeException exception) {
 
 					retryExceptionHandler.accept (
 						attempt,
@@ -1107,15 +1107,6 @@ class LogicUtils {
 						exception);
 
 					throw exception;
-
-				} catch (Exception exception) {
-
-					finalExceptionHandler.accept (
-						attempt,
-						exception);
-
-					throw new RuntimeException (
-						exception);
 
 				}
 
