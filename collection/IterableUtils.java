@@ -76,20 +76,16 @@ class IterableUtils {
 			@NonNull Iterable <? extends InputType> iterable,
 			@NonNull Function <
 				? super InputType,
-				Iterable <OutputType>
+				? extends Iterable <? extends OutputType>
 			> mapFunction) {
 
 		return () ->
-			Streams.stream (
-				iterable)
-
-			.flatMap (
-				item ->
-					iterableStream (
-						mapFunction.apply (
-							item)))
-
-			.iterator ();
+			new FlatMapIterator <InputType, OutputType> (
+				iterable.iterator (),
+				in ->
+					mapFunction.apply (
+						in
+					).iterator ());
 
 	}
 

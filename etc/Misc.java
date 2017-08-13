@@ -934,10 +934,15 @@ class Misc {
 
 	public static
 	String stringTrim (
-			@NonNull String source) {
+			@NonNull CharSequence source) {
 
-		return source.trim ();
+		return source.toString ().trim ();
 
+	}
+
+	public static
+	Function <CharSequence, String> stringTrim () {
+		return Misc::stringTrim;
 	}
 
 	public static <Type>
