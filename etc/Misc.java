@@ -156,6 +156,46 @@ class Misc {
 	}
 
 	public static
+	Optional <Long> min (
+			@NonNull Iterable <Long> params) {
+
+		Iterator <Long> iterator =
+			params.iterator ();
+
+		if (! iterator.hasNext ()) {
+			return optionalAbsent ();
+		}
+
+		long result =
+			iterator.next ();
+
+		while (iterator.hasNext ()) {
+
+			long param =
+				iterator.next ();
+
+			if (param < result) {
+				result = param;
+			}
+
+		}
+
+		return optionalOf (
+			result);
+
+	}
+
+	public static
+	Long minRequired (
+			@NonNull Iterable <Long> params) {
+
+		return optionalGetRequired (
+			min (
+				params));
+
+	}
+
+	public static
 	int min (
 			int ... params) {
 
@@ -216,27 +256,42 @@ class Misc {
 	}
 
 	public static
-	long max (
-			Iterable <Integer> params) {
+	Optional <Long> max (
+			@NonNull Iterable <Long> params) {
 
-		Iterator <Integer> iterator =
+		Iterator <Long> iterator =
 			params.iterator ();
 
-		long value =
+		if (! iterator.hasNext ()) {
+			return optionalAbsent ();
+		}
+
+		long result =
 			iterator.next ();
 
 		while (iterator.hasNext ()) {
 
-			Integer param =
+			long param =
 				iterator.next ();
 
-			if (param > value) {
-				value = param;
+			if (param > result) {
+				result = param;
 			}
 
 		}
 
-		return value;
+		return optionalOf (
+			result);
+
+	}
+
+	public static
+	Long maxRequired (
+			@NonNull Iterable <Long> params) {
+
+		return optionalGetRequired (
+			max (
+				params));
 
 	}
 
