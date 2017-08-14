@@ -22,7 +22,9 @@ interface TimeFormatterPlugin {
 	DateTimeFormatter longDateFormat ();
 	DateTimeFormatter shortDateFormat ();
 
-	DateTimeFormatter timeFormat ();
+	DateTimeFormatter timeSecondFormat ();
+	DateTimeFormatter timeMinuteFormat ();
+	DateTimeFormatter timeHourFormat ();
 
 	DateTimeFormatter timezoneLongFormat ();
 	DateTimeFormatter timezoneShortFormat ();

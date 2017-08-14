@@ -111,9 +111,17 @@ class DefaultTimeFormatterFactory
 
 				// time
 
-				.timeFormat (
+				.timeSecondFormat (
 					DateTimeFormat.forPattern (
 						"HH:mm:SS"))
+
+				.timeMinuteFormat (
+					DateTimeFormat.forPattern (
+						"HH:mm"))
+
+				.timeHourFormat (
+					DateTimeFormat.forPattern (
+						"HH"))
 
 				// timezone
 

@@ -144,10 +144,30 @@ interface TimeFormatterAuto
 
 	@Override
 	default
-	String timeString (
+	String timeStringSeconds (
 			@NonNull LocalTime time) {
 
-		return plugin ().timeFormat ().print (
+		return plugin ().timeSecondFormat ().print (
+			time);
+
+	}
+
+	@Override
+	default
+	String timeStringMinutes (
+			@NonNull LocalTime time) {
+
+		return plugin ().timeMinuteFormat ().print (
+			time);
+
+	}
+
+	@Override
+	default
+	String timeStringHours (
+			@NonNull LocalTime time) {
+
+		return plugin ().timeHourFormat ().print (
 			time);
 
 	}

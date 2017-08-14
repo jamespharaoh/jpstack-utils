@@ -15,15 +15,45 @@ interface DurationFormatterMethods {
 
 	// duration string
 
-	String durationStringNumeric (
+	String durationStringNumericSeconds (
 			ReadableDuration interval);
 
 	default
-	String durationStringNumeric (
+	String durationStringNumericSeconds (
 			@NonNull ReadableInstant start,
 			@NonNull ReadableInstant end) {
 
-		return durationStringNumeric (
+		return durationStringNumericSeconds (
+			new Duration (
+				start,
+				end));
+
+	}
+
+	String durationStringNumericMinutes (
+			ReadableDuration interval);
+
+	default
+	String durationStringNumericMinutes (
+			@NonNull ReadableInstant start,
+			@NonNull ReadableInstant end) {
+
+		return durationStringNumericMinutes (
+			new Duration (
+				start,
+				end));
+
+	}
+
+	String durationStringNumericHours (
+			ReadableDuration interval);
+
+	default
+	String durationStringNumericHours (
+			@NonNull ReadableInstant start,
+			@NonNull ReadableInstant end) {
+
+		return durationStringNumericHours (
 			new Duration (
 				start,
 				end));
