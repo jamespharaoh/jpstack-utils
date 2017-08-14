@@ -65,6 +65,18 @@ interface TimeFormatterDateMethods {
 
 	}
 
+	default
+	String dateStringShort (
+			@NonNull String timeZoneName,
+			@NonNull ReadableInstant instant) {
+
+		return dateStringShort (
+			DateTimeZone.forID (
+				timeZoneName),
+			instant);
+
+	}
+
 	// date parse
 
 	LocalDate dateParseRequired (
