@@ -118,38 +118,6 @@ interface TimeFormatterAuto
 
 	}
 
-	// timestamp timezone long string
-
-	@Override
-	default
-	String timestampTimezoneSecondLongString (
-			@NonNull ReadableDateTime dateTime) {
-
-		return plugin ().timestampTimezoneSecondLongFormat ().print (
-			dateTime);
-
-	}
-
-	@Override
-	default
-	String timestampTimezoneMinuteLongString (
-			@NonNull ReadableDateTime dateTime) {
-
-		return plugin ().timestampTimezoneMinuteLongFormat ().print (
-			dateTime);
-
-	}
-
-	@Override
-	default
-	String timestampTimezoneHourLongString (
-			@NonNull ReadableDateTime dateTime) {
-
-		return plugin ().timestampTimezoneHourLongFormat ().print (
-			dateTime);
-
-	}
-
 	// date string
 
 	@Override
@@ -304,38 +272,6 @@ interface TimeFormatterAuto
 			@NonNull String string) {
 
 		return plugin ().timestampTimezoneHourShortFormat ()
-			.parseDateTime (string);
-
-	}
-
-	// timestamp timezone long parse
-
-	@Override
-	default
-	DateTime timestampTimezoneSecondLongParseRequired (
-			@NonNull String string) {
-
-		return plugin ().timestampTimezoneSecondLongFormat ()
-			.parseDateTime (string);
-
-	}
-
-	@Override
-	default
-	DateTime timestampTimezoneMinuteLongParseRequired (
-			@NonNull String string) {
-
-		return plugin ().timestampTimezoneMinuteLongFormat ()
-			.parseDateTime (string);
-
-	}
-
-	@Override
-	default
-	DateTime timestampTimezoneHourLongParseRequired (
-			@NonNull String string) {
-
-		return plugin ().timestampTimezoneHourLongFormat ()
 			.parseDateTime (string);
 
 	}

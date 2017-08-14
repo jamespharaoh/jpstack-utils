@@ -20,7 +20,6 @@ interface TimeFormatterMethods
 		TimeFormatterTimeMethods,
 		TimeFormatterTimestampMethods,
 		TimeFormatterTimestampTimezoneMethods,
-		TimeFormatterTimestampTimezoneLongMethods,
 		TimeFormatterTimestampTimezoneShortMethods,
 		TimeFormatterTimezoneMethods {
 

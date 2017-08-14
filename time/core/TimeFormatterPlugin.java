@@ -19,10 +19,6 @@ interface TimeFormatterPlugin {
 	DateTimeFormatter timestampTimezoneMinuteShortFormat ();
 	DateTimeFormatter timestampTimezoneHourShortFormat ();
 
-	DateTimeFormatter timestampTimezoneSecondLongFormat ();
-	DateTimeFormatter timestampTimezoneMinuteLongFormat ();
-	DateTimeFormatter timestampTimezoneHourLongFormat ();
-
 	DateTimeFormatter longDateFormat ();
 	DateTimeFormatter shortDateFormat ();
 

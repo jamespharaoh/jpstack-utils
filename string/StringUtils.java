@@ -10,6 +10,7 @@ import static wbs.utils.etc.NullUtils.ifNull;
 import static wbs.utils.etc.NullUtils.nullIf;
 import static wbs.utils.etc.NumberUtils.integerToDecimalString;
 import static wbs.utils.etc.NumberUtils.integerToDecimalStringLazy;
+import static wbs.utils.etc.NumberUtils.toJavaIntegerRequired;
 import static wbs.utils.etc.OptionalUtils.optionalAbsent;
 import static wbs.utils.etc.OptionalUtils.optionalGetRequired;
 import static wbs.utils.etc.OptionalUtils.optionalOf;
@@ -459,6 +460,31 @@ class StringUtils {
 			0,
 			Math.toIntExact (
 				end));
+
+	}
+
+	public static
+	String substringMinusEnd (
+			@NonNull CharSequence string,
+			int numChars) {
+
+		return string.toString ().substring (
+			0,
+			string.length ()
+				- numChars);
+
+	}
+
+	public static
+	String substringMinusEnd (
+			@NonNull CharSequence string,
+			long numChars) {
+
+		return string.toString ().substring (
+			0,
+			string.length ()
+				- toJavaIntegerRequired (
+					numChars));
 
 	}
 
@@ -1203,7 +1229,10 @@ class StringUtils {
 
 		) {
 
-			return singular + "ies";
+			return substringMinusEnd (
+				singular,
+				1l
+			) + "ies";
 
 		} else {
 

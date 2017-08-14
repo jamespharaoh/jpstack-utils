@@ -1,6 +1,5 @@
 package wbs.utils.collection;
 
-import static wbs.utils.collection.ArrayUtils.arrayStream;
 import static wbs.utils.collection.CollectionUtils.emptyList;
 import static wbs.utils.etc.OptionalUtils.optionalAbsent;
 import static wbs.utils.etc.OptionalUtils.optionalFromNullable;
@@ -13,6 +12,7 @@ import static wbs.utils.etc.TypeUtils.genericCastUnchecked;
 import static wbs.utils.etc.TypeUtils.isInstanceOf;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -650,34 +650,40 @@ class IterableUtils {
 
 	}
 
-	public static <InType, OutType>
+	public static <InType, OutType extends InType>
 	Iterable <OutType> iterableFilterByClass (
 			@NonNull Iterable <InType> iterable,
 			@NonNull Class <OutType> targetClass) {
 
 		return () ->
-			Streams.stream (
-				iterable)
+			genericCastUnchecked (
+				new FilterIterator <InType> (
+					iterable.iterator (),
+					isInstanceOf (
+						targetClass)));
 
-			.map (
-				item ->
-					dynamicCast (
-						targetClass,
-						item))
+	}
 
-			.filter (
-				optionalItem ->
-					optionalIsPresent (
-						optionalItem))
+	public static <Item>
+	Iterable <Item> iterableChain (
+			@NonNull Iterable <? extends Iterable <? extends Item>>
+				inIterables) {
 
-			.map (
-				optionalItem ->
-					optionalGetRequired (
-						optionalItem))
+		return () ->
+			new FlatMapIterator <Iterable <? extends Item>, Item> (
+				inIterables.iterator (),
+				Iterable::iterator);
 
-			.iterator ()
+	}
 
-		;
+	@SafeVarargs
+	public static <Item>
+	Iterable <Item> iterableChainArguments (
+			@NonNull Iterable <? extends Item> ... iterables) {
+
+		return iterableChain (
+			Arrays.asList (
+				iterables));
 
 	}
 
@@ -696,61 +702,14 @@ class IterableUtils {
 
 	}
 
-	@SafeVarargs
-	public static <Type>
-	Iterable <Type> iterableChainArguments (
-			@NonNull Iterable <? extends Type> ... iterables) {
+	public static <Item>
+	List <Item> iterableChainToList (
+			@NonNull Iterable <? extends Iterable <? extends Item>>
+				inIterables) {
 
-		return () ->
-			arrayStream (
-				iterables)
-
-			.flatMap (
-				iterable ->
-					iterableStream (
-						iterable))
-
-			.map (
-				item ->
-					(Type) item)
-
-			.iterator ();
-
-	}
-
-	public static <Type>
-	Iterable <Type> iterableChain (
-			@NonNull Iterable <Iterable <Type>> iterables) {
-
-		return () ->
-			iterableStream (
-				iterables)
-
-			.flatMap (
-				iterable ->
-					iterableStream (
-						iterable))
-
-			.iterator ();
-
-	}
-
-	public static <Type>
-	List <Type> iterableChainToList (
-			@NonNull Iterable <Iterable <Type>> iterables) {
-
-		return iterableStream (
-			iterables)
-
-			.flatMap (
-				iterable ->
-					iterableStream (
-						iterable))
-
-			.collect (
-				Collectors.toList ())
-
-		;
+		return ImmutableList.copyOf (
+			iterableChain (
+				inIterables));
 
 	}
 
