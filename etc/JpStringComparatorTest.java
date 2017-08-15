@@ -1,12 +1,11 @@
 package wbs.utils.etc;
 
+import static wbs.utils.collection.IterableUtils.iterableOrderToList;
+
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import com.google.common.collect.ImmutableList;
 
@@ -23,13 +22,18 @@ public
 class JpStringComparatorTest {
 
 	private final
-	List <String> example;
+	List <String> expected;
+
+	private final
+	List <String> unsorted;
 
 	public
 	JpStringComparatorTest (
-			@NonNull List <String> example) {
+			@NonNull List <String> expected,
+			@NonNull List <String> unsorted) {
 
-		this.example = example;
+		this.expected = expected;
+		this.unsorted = unsorted;
 
 	}
 
@@ -37,13 +41,14 @@ class JpStringComparatorTest {
 	public
 	void test () {
 
-		Collections.sort (
-			example,
-			JpStringComparator.instance);
+		List <String> sorted =
+			iterableOrderToList (
+				unsorted,
+				JpStringComparator.instance);
 
 		Assert.assertArrayEquals (
-			sortedStrings.toArray (),
-			example.toArray ());
+			expected.toArray (),
+			sorted.toArray ());
 
 	}
 
@@ -55,10 +60,19 @@ class JpStringComparatorTest {
 			new Random (
 				0xdeadbeef);
 
-		return IntStream.range (0, 64)
+		List <Object []> testCases =
+			new ArrayList<> ();
 
-			.mapToObj (
-				index -> {
+		for (
+			List <String> sortedStrings
+				: sortedStringsList
+		) {
+
+			for (
+				int index = 0;
+				index < 8;
+				index ++
+			) {
 
 				List <String> remaningStrings =
 					new LinkedList<> (
@@ -76,21 +90,44 @@ class JpStringComparatorTest {
 
 				}
 
-				return new Object[] {
-					result
-				};
+				testCases.add (
+					new Object[] {
+						sortedStrings,
+						result
+					});
 
-			})
+			}
 
-			.collect (
-				Collectors.toList ())
+		}
 
-		;
+		return testCases;
 
 	}
 
 	private static
-	List <String> sortedStrings =
+	List <List <String>> sortedStringsList =
+		ImmutableList.of (
+
+		ImmutableList.of (
+			"cache.IdCacheBuilder",
+			"cache.IdLookupCache",
+			"random.RandomLogicImplementation",
+			"thread.ThreadManagerImplementation",
+			"time.core.DefaultTimeFormatterFactory",
+			"time.core.TimeFormatterManager",
+			"time.duration.DurationFormatterImplementation"),
+
+		ImmutableList.of (
+			"context.RequestContextImplementation",
+			"mvc.WebActionRequestHandler",
+			"mvc.WebResponderRequestHandler",
+			"pathhandler.RegexpPathHandler",
+			"responder.BinaryResponder",
+			"responder.JsonResponder",
+			"responder.TextResponder",
+			"servlet.PathHandlerServlet",
+			"servlet.ResponseFilter"),
+
 		ImmutableList.of (
 			".Hello",
 			".hello",
@@ -98,6 +135,8 @@ class JpStringComparatorTest {
 			"Hello-World",
 			"HelloWorld",
 			"Helloworld",
-			"hello");
+			"hello")
+
+	);
 
 }

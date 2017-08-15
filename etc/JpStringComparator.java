@@ -276,6 +276,10 @@ class JpStringComparator
 
 			for (;;) {
 
+				if (thisChar != otherChar) {
+					return thisChar - otherChar;
+				}
+
 				if (thisChar >= Character.MAX_VALUE) {
 					thisPosition += 2;
 				} else {
@@ -302,10 +306,6 @@ class JpStringComparator
 				otherChar =
 					other.string.codePointAt (
 						otherPosition);
-
-				if (thisChar != otherChar) {
-					return otherChar - thisChar;
-				}
 
 			}
 
