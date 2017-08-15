@@ -10,7 +10,7 @@ class DebugUtils {
 
 	public static
 	void debugFormat (
-			@NonNull String ... arguments) {
+			@NonNull CharSequence ... arguments) {
 
 		System.err.print (
 			joinWithoutSeparator (
