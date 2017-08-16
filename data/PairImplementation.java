@@ -2,15 +2,21 @@ package wbs.utils.data;
 
 import lombok.NonNull;
 
+import wbs.framework.data.annotations.DataAttribute;
+import wbs.framework.data.annotations.DataClass;
+
+@DataClass ("pair")
 public final
 class PairImplementation <Left, Right>
 	implements Pair <Left, Right> {
 
 	// state
 
+	@DataAttribute
 	private final
 	Left left;
 
+	@DataAttribute
 	private final
 	Right right;
 
