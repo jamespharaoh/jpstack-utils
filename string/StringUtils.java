@@ -1214,6 +1214,10 @@ class StringUtils {
 		} else if (
 
 			stringEndsWithSimple (
+				"ay",
+				singular)
+
+			|| stringEndsWithSimple (
 				"ey",
 				singular)
 
