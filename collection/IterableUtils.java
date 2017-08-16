@@ -90,6 +90,24 @@ class IterableUtils {
 
 	}
 
+	public static <InputType, OutputType>
+	List <OutputType> iterableFlatMapToList (
+			@NonNull Iterable <? extends InputType> iterable,
+			@NonNull Function <
+				? super InputType,
+				? extends Iterable <? extends OutputType>
+			> mapFunction) {
+
+		return ImmutableList.copyOf (
+			new FlatMapIterator <InputType, OutputType> (
+				iterable.iterator (),
+				in ->
+					mapFunction.apply (
+						in
+					).iterator ()));
+
+	}
+
 	public static <InLeft, InRight, Out>
 	Iterable <Out> iterableMap (
 			@NonNull Iterable <? extends Pair <
