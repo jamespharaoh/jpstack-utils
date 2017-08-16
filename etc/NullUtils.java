@@ -4,6 +4,8 @@ import static wbs.utils.collection.ArrayUtils.arrayStream;
 import static wbs.utils.collection.IterableUtils.iterableStream;
 
 import java.util.List;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import com.google.common.collect.ImmutableList;
@@ -62,6 +64,22 @@ class NullUtils {
 		return input == null
 			? ifNull
 			: input;
+
+	}
+
+	public static <Type>
+	Type ifNull (
+			@NonNull Supplier <Type> supplier0,
+			@NonNull Supplier <Type> supplier1) {
+
+		Type value0 =
+			supplier0.get ();
+
+		if (value0 != null) {
+			return value0;
+		}
+
+		return supplier1.get ();
 
 	}
 
@@ -218,6 +236,16 @@ class NullUtils {
 
 		return object != null;
 
+	}
+
+	public static
+	Predicate <Object> isNotNull () {
+		return NullUtils::isNotNull;
+	}
+
+	public static
+	Function <Object, Boolean> isNotNullFunction () {
+		return NullUtils::isNotNull;
 	}
 
 	public static

@@ -12,27 +12,81 @@ import org.joda.time.ReadableInstant;
 public
 interface TimeFormatterTimeMethods {
 
-	// time string
+	// time string seconds
 
-	String timeString (
+	String timeStringSeconds (
 			LocalTime time);
 
 	default
-	String timeString (
+	String timeStringSeconds (
 			@NonNull ReadableDateTime dateTime) {
 
-		return timeString (
+		return timeStringSeconds (
 			localTime (
 				dateTime));
 
 	}
 
 	default
-	String timeString (
+	String timeStringSeconds (
 			@NonNull DateTimeZone timeZone,
 			@NonNull ReadableInstant instant) {
 
-		return timeString (
+		return timeStringSeconds (
+			localTime (
+				timeZone,
+				instant));
+
+	}
+
+	// time string minutes
+
+	String timeStringMinutes (
+			LocalTime time);
+
+	default
+	String timeStringMinutes (
+			@NonNull ReadableDateTime dateTime) {
+
+		return timeStringMinutes (
+			localTime (
+				dateTime));
+
+	}
+
+	default
+	String timeStringMinutes (
+			@NonNull DateTimeZone timeZone,
+			@NonNull ReadableInstant instant) {
+
+		return timeStringMinutes (
+			localTime (
+				timeZone,
+				instant));
+
+	}
+
+	// time string hours
+
+	String timeStringHours (
+			LocalTime time);
+
+	default
+	String timeStringHours (
+			@NonNull ReadableDateTime dateTime) {
+
+		return timeStringHours (
+			localTime (
+				dateTime));
+
+	}
+
+	default
+	String timeStringHours (
+			@NonNull DateTimeZone timeZone,
+			@NonNull ReadableInstant instant) {
+
+		return timeStringHours (
 			localTime (
 				timeZone,
 				instant));

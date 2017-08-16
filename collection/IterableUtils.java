@@ -1,6 +1,5 @@
 package wbs.utils.collection;
 
-import static wbs.utils.collection.ArrayUtils.arrayStream;
 import static wbs.utils.collection.CollectionUtils.emptyList;
 import static wbs.utils.etc.OptionalUtils.optionalAbsent;
 import static wbs.utils.etc.OptionalUtils.optionalFromNullable;
@@ -9,22 +8,27 @@ import static wbs.utils.etc.OptionalUtils.optionalIsNotPresent;
 import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
 import static wbs.utils.etc.OptionalUtils.optionalOf;
 import static wbs.utils.etc.TypeUtils.dynamicCast;
+import static wbs.utils.etc.TypeUtils.genericCastUnchecked;
+import static wbs.utils.etc.TypeUtils.isInstanceOf;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -56,24 +60,15 @@ class IterableUtils {
 
 	}
 
-	public static <InputType, OutputType>
-	Iterable <OutputType> iterableMap (
-			@NonNull Iterable <? extends InputType> iterable,
-			@NonNull Function <
-				? super InputType,
-				OutputType
-			> mapFunction) {
+	public static <In, Out>
+	Iterable <Out> iterableMap (
+			@NonNull Iterable <? extends In> iterable,
+			@NonNull Function <? super In, ? extends Out> mapFunction) {
 
 		return () ->
-			Streams.stream (
-				iterable)
-
-			.map (
-				item ->
-					mapFunction.apply (
-						item))
-
-			.iterator ();
+			new MapIterator <In, Out> (
+				iterable.iterator (),
+				mapFunction);
 
 	}
 
@@ -82,43 +77,59 @@ class IterableUtils {
 			@NonNull Iterable <? extends InputType> iterable,
 			@NonNull Function <
 				? super InputType,
-				Iterable <OutputType>
+				? extends Iterable <? extends OutputType>
 			> mapFunction) {
 
 		return () ->
-			Streams.stream (
-				iterable)
-
-			.flatMap (
-				item ->
-					iterableStream (
-						mapFunction.apply (
-							item)))
-
-			.iterator ();
+			new FlatMapIterator <InputType, OutputType> (
+				iterable.iterator (),
+				in ->
+					mapFunction.apply (
+						in
+					).iterator ());
 
 	}
 
-	public static <InLeftType, InRightType, OutType>
-	Iterable <OutType> iterableMap (
-			@NonNull Iterable <Pair <InLeftType, InRightType>> iterable,
+	public static <InputType, OutputType>
+	List <OutputType> iterableFlatMapToList (
+			@NonNull Iterable <? extends InputType> iterable,
+			@NonNull Function <
+				? super InputType,
+				? extends Iterable <? extends OutputType>
+			> mapFunction) {
+
+		return ImmutableList.copyOf (
+			new FlatMapIterator <InputType, OutputType> (
+				iterable.iterator (),
+				in ->
+					mapFunction.apply (
+						in
+					).iterator ()));
+
+	}
+
+	public static <InLeft, InRight, Out>
+	Iterable <Out> iterableMap (
+			@NonNull Iterable <? extends Pair <
+				? extends InLeft,
+				? extends InRight
+			>> iterable,
 			@NonNull BiFunction <
-				? super InLeftType,
-				? super InRightType,
-				OutType
+				? super InLeft,
+				? super InRight,
+				? extends Out
 			> mapFunction) {
 
 		return () ->
-			Streams.stream (
-				iterable)
-
-			.map (
+			new MapIterator <Pair <
+				? extends InLeft,
+				? extends InRight>,
+			Out> (
+				iterable.iterator (),
 				pair ->
 					mapFunction.apply (
 						pair.left (),
-						pair.right ()))
-
-			.iterator ();
+						pair.right ()));
 
 	}
 
@@ -512,7 +523,7 @@ class IterableUtils {
 	public static <ItemType>
 	ItemType iterableFindExactlyOneRequired (
 			@NonNull Iterable <ItemType> iterable,
-			@NonNull Predicate <ItemType> predicate) {
+			@NonNull Predicate <? super ItemType> predicate) {
 
 		Optional <ItemType> value =
 			optionalAbsent ();
@@ -553,6 +564,19 @@ class IterableUtils {
 
 		return optionalGetRequired (
 			value);
+
+	}
+
+	public static <ItemType>
+	ItemType iterableFindExactlyOneRequired (
+			@NonNull Iterable <?> iterable,
+			@NonNull Class <ItemType> itemClass) {
+
+		return genericCastUnchecked (
+			iterableFindExactlyOneRequired (
+				iterable,
+				isInstanceOf (
+					itemClass)));
 
 	}
 
@@ -644,34 +668,40 @@ class IterableUtils {
 
 	}
 
-	public static <InType, OutType>
+	public static <InType, OutType extends InType>
 	Iterable <OutType> iterableFilterByClass (
 			@NonNull Iterable <InType> iterable,
 			@NonNull Class <OutType> targetClass) {
 
 		return () ->
-			Streams.stream (
-				iterable)
+			genericCastUnchecked (
+				new FilterIterator <InType> (
+					iterable.iterator (),
+					isInstanceOf (
+						targetClass)));
 
-			.map (
-				item ->
-					dynamicCast (
-						targetClass,
-						item))
+	}
 
-			.filter (
-				optionalItem ->
-					optionalIsPresent (
-						optionalItem))
+	public static <Item>
+	Iterable <Item> iterableChain (
+			@NonNull Iterable <? extends Iterable <? extends Item>>
+				inIterables) {
 
-			.map (
-				optionalItem ->
-					optionalGetRequired (
-						optionalItem))
+		return () ->
+			new FlatMapIterator <Iterable <? extends Item>, Item> (
+				inIterables.iterator (),
+				Iterable::iterator);
 
-			.iterator ()
+	}
 
-		;
+	@SafeVarargs
+	public static <Item>
+	Iterable <Item> iterableChainArguments (
+			@NonNull Iterable <? extends Item> ... iterables) {
+
+		return iterableChain (
+			Arrays.asList (
+				iterables));
 
 	}
 
@@ -690,61 +720,14 @@ class IterableUtils {
 
 	}
 
-	@SafeVarargs
-	public static <Type>
-	Iterable <Type> iterableChainArguments (
-			@NonNull Iterable <? extends Type> ... iterables) {
+	public static <Item>
+	List <Item> iterableChainToList (
+			@NonNull Iterable <? extends Iterable <? extends Item>>
+				inIterables) {
 
-		return () ->
-			arrayStream (
-				iterables)
-
-			.flatMap (
-				iterable ->
-					iterableStream (
-						iterable))
-
-			.map (
-				item ->
-					(Type) item)
-
-			.iterator ();
-
-	}
-
-	public static <Type>
-	Iterable <Type> iterableChain (
-			@NonNull Iterable <Iterable <Type>> iterables) {
-
-		return () ->
-			iterableStream (
-				iterables)
-
-			.flatMap (
-				iterable ->
-					iterableStream (
-						iterable))
-
-			.iterator ();
-
-	}
-
-	public static <Type>
-	List <Type> iterableChainToList (
-			@NonNull Iterable <Iterable <Type>> iterables) {
-
-		return iterableStream (
-			iterables)
-
-			.flatMap (
-				iterable ->
-					iterableStream (
-						iterable))
-
-			.collect (
-				Collectors.toList ())
-
-		;
+		return ImmutableList.copyOf (
+			iterableChain (
+				inIterables));
 
 	}
 
@@ -861,6 +844,90 @@ class IterableUtils {
 			};
 
 		};
+
+	}
+
+	public static <Item>
+	void iterableForEach (
+			@NonNull Iterable <Item> iterable,
+			@NonNull Consumer <Item> function) {
+
+		for (
+			Item item
+				: iterable
+		) {
+
+			function.accept (
+				item);
+
+		}
+
+	}
+
+	public static <Left, Right>
+	void iterableForEach (
+			@NonNull Iterable <Pair <Left, Right>> iterable,
+			@NonNull BiConsumer <Left, Right> function) {
+
+		for (
+			Pair <Left, Right> item
+				: iterable
+		) {
+
+			function.accept (
+				item.left (),
+				item.right ());
+
+		}
+
+	}
+
+	public static <In, Out>
+	ParallelIterable <Out> iterableMapParallel (
+			@NonNull Long threads,
+			@NonNull Long maxTasks,
+			@NonNull Iterable <In> inItems,
+			@NonNull Function <In, Out> mapFunction) {
+
+		return () ->
+			new ParallelIterator <In, Out> (
+				threads,
+				maxTasks,
+				inItems.iterator (),
+				mapFunction);
+
+	}
+
+	public static <Item>
+	void iterableForEachParallel (
+			@NonNull Long threads,
+			@NonNull Long maxTasks,
+			@NonNull Iterable <Item> inItems,
+			@NonNull Consumer <Item> function) {
+
+		try (
+
+			ParallelIterator <Item, Object> iterator =
+				new ParallelIterator <Item, Object> (
+					threads,
+					maxTasks,
+					inItems.iterator (),
+					item -> {
+
+				function.accept (
+					item);
+
+				return new Object ();
+
+			});
+
+		) {
+
+			while (iterator.hasNext ()) {
+				iterator.next ();
+			}
+
+		}
 
 	}
 

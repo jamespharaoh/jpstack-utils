@@ -13,6 +13,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import com.google.common.base.Optional;
@@ -90,6 +92,20 @@ class CollectionUtils {
 			Collection <?> collection) {
 
 		return ! collection.isEmpty ();
+
+	}
+
+	public static
+	Predicate <Collection <?>> collectionIsNotEmpty () {
+
+		return CollectionUtils::collectionIsNotEmpty;
+
+	}
+
+	public static
+	Function <Collection <?>, Boolean> collectionIsNotEmptyFunction () {
+
+		return CollectionUtils::collectionIsNotEmpty;
 
 	}
 

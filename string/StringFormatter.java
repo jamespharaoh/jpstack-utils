@@ -62,15 +62,15 @@ class StringFormatter {
 	public
 	String formatReal (
 			@NonNull String format,
-			@NonNull Iterable <String> argumenta) {
+			@NonNull Iterable <String> arguments) {
 
 		StringBuilder stringBuilder =
 			new StringBuilder ();
 
 		int searchPosition = 0;
 
-		Iterator<?> iterator =
-			argumenta.iterator ();
+		Iterator <?> iterator =
+			arguments.iterator ();
 
 		for (;;) {
 

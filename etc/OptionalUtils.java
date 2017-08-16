@@ -1220,8 +1220,8 @@ class OptionalUtils {
 
 	public static <From,To>
 	Optional <To> optionalMapOptional (
-			Optional<From> optionalValue,
-			Function<? super From,Optional<To>> mappingFunction) {
+			Optional <From> optionalValue,
+			Function <? super From, Optional <To>> mappingFunction) {
 
 		if (
 			optionalIsPresent (
@@ -1286,7 +1286,7 @@ class OptionalUtils {
 
 	public static <Type>
 	Optional <Type> optionalOf (
-			Type value) {
+			@NonNull Type value) {
 
 		return Optional.of (
 			value);

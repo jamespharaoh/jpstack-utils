@@ -55,7 +55,7 @@ class ResultUtils {
 
 	public static <LeftType>
 	Either <LeftType, String> errorResultFormat (
-			@NonNull String ... arguments) {
+			@NonNull CharSequence ... arguments) {
 
 		return Either.<LeftType, String> right (
 			stringFormatArray (

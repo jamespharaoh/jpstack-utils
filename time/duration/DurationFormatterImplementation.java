@@ -27,7 +27,7 @@ class DurationFormatterImplementation
 
 	@Override
 	public
-	String durationStringNumeric (
+	String durationStringNumericSeconds (
 			@NonNull ReadableDuration inputDuration) {
 
 		long inputMilliseconds =
@@ -89,6 +89,77 @@ class DurationFormatterImplementation
 					inputMilliseconds / 1000l % 60l);
 
 			}
+
+		}
+
+	}
+
+	@Override
+	public
+	String durationStringNumericMinutes (
+			@NonNull ReadableDuration inputDuration) {
+
+		long inputMilliseconds =
+			inputDuration.getMillis ();
+
+		if (inputMilliseconds < 60l * 60l * 1000l) {
+
+			if (inputMilliseconds % (60l * 1000l) != 0) {
+
+				return String.format (
+					"%d.%02d",
+					inputMilliseconds / 1000l / 60l,
+					inputMilliseconds / 1000l % 60l);
+
+			} else {
+
+				return String.format (
+					"%d",
+					inputMilliseconds / 1000l / 60l);
+
+			}
+
+		} else {
+
+			if (inputMilliseconds % (60l * 1000l) != 0) {
+
+				return String.format (
+					"%d:%02.2f",
+					inputMilliseconds / 1000l / 60l / 60l,
+					inputMilliseconds / 1000f / 60f % 60f);
+
+			} else {
+
+				return String.format (
+					"%d:%02d",
+					inputMilliseconds / 1000l / 60l / 60l,
+					inputMilliseconds / 1000l / 60l % 60l);
+
+			}
+
+		}
+
+	}
+
+	@Override
+	public
+	String durationStringNumericHours (
+			@NonNull ReadableDuration inputDuration) {
+
+		long inputMilliseconds =
+			inputDuration.getMillis ();
+
+		if (inputMilliseconds % (60l * 60l * 1000l) != 0) {
+
+			return String.format (
+				"%.2f",
+				inputMilliseconds / 1000f / 60f / 60f);
+
+		} else {
+
+			return String.format (
+				"%d",
+				inputMilliseconds / 1000l / 60l / 60l);
 
 		}
 

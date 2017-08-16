@@ -156,6 +156,46 @@ class Misc {
 	}
 
 	public static
+	Optional <Long> min (
+			@NonNull Iterable <Long> params) {
+
+		Iterator <Long> iterator =
+			params.iterator ();
+
+		if (! iterator.hasNext ()) {
+			return optionalAbsent ();
+		}
+
+		long result =
+			iterator.next ();
+
+		while (iterator.hasNext ()) {
+
+			long param =
+				iterator.next ();
+
+			if (param < result) {
+				result = param;
+			}
+
+		}
+
+		return optionalOf (
+			result);
+
+	}
+
+	public static
+	Long minRequired (
+			@NonNull Iterable <Long> params) {
+
+		return optionalGetRequired (
+			min (
+				params));
+
+	}
+
+	public static
 	int min (
 			int ... params) {
 
@@ -216,27 +256,42 @@ class Misc {
 	}
 
 	public static
-	long max (
-			Iterable <Integer> params) {
+	Optional <Long> max (
+			@NonNull Iterable <Long> params) {
 
-		Iterator <Integer> iterator =
+		Iterator <Long> iterator =
 			params.iterator ();
 
-		long value =
+		if (! iterator.hasNext ()) {
+			return optionalAbsent ();
+		}
+
+		long result =
 			iterator.next ();
 
 		while (iterator.hasNext ()) {
 
-			Integer param =
+			long param =
 				iterator.next ();
 
-			if (param > value) {
-				value = param;
+			if (param > result) {
+				result = param;
 			}
 
 		}
 
-		return value;
+		return optionalOf (
+			result);
+
+	}
+
+	public static
+	Long maxRequired (
+			@NonNull Iterable <Long> params) {
+
+		return optionalGetRequired (
+			max (
+				params));
 
 	}
 
@@ -766,6 +821,25 @@ class Misc {
 
 	public static
 	long sum (
+			@NonNull Iterable <Long> values) {
+
+		long total = 0l;
+
+		for (
+			Long value
+				: values
+		) {
+
+			total += value;
+
+		}
+
+		return total;
+
+	}
+
+	public static
+	long sum (
 			long value0,
 			long value1) {
 
@@ -812,6 +886,33 @@ class Misc {
 			long value4) {
 
 		return value0 + value1 + value2 + value3 + value4;
+
+	}
+
+	public static
+	long sum (
+			long value0,
+			long value1,
+			long value2,
+			long value3,
+			long value4,
+			long value5) {
+
+		return value0 + value1 + value2 + value3 + value4 + value5;
+
+	}
+
+	public static
+	long sum (
+			long value0,
+			long value1,
+			long value2,
+			long value3,
+			long value4,
+			long value5,
+			long value6) {
+
+		return value0 + value1 + value2 + value3 + value4 + value5 + value6;
 
 	}
 
@@ -934,10 +1035,15 @@ class Misc {
 
 	public static
 	String stringTrim (
-			@NonNull String source) {
+			@NonNull CharSequence source) {
 
-		return source.trim ();
+		return source.toString ().trim ();
 
+	}
+
+	public static
+	Function <CharSequence, String> stringTrim () {
+		return Misc::stringTrim;
 	}
 
 	public static <Type>

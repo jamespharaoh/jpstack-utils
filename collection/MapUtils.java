@@ -6,12 +6,14 @@ import static wbs.utils.string.StringUtils.objectToString;
 import static wbs.utils.string.StringUtils.stringFormat;
 
 import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Properties;
+import java.util.TreeMap;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
@@ -627,6 +629,66 @@ class MapUtils {
 		}
 
 		return outMapBuilder.build ();
+
+	}
+
+	public static <Key, Value>
+	Map <Key, List <Value>> mapWithDerivedKeyGroup (
+			@NonNull Iterable <Value> values,
+			@NonNull Function <Value, Key> keyFunction) {
+
+		Map <Key, List <Value>> map =
+			new TreeMap <> ();
+
+		for (
+			Value value
+				: values
+		) {
+
+			List <Value> items =
+				mapItemForKeyOrElseSet (
+					map,
+					keyFunction.apply (
+						value),
+					() -> new ArrayList<> ());
+
+			items.add (
+				value);
+
+		}
+
+		return map;
+
+	}
+
+	public static <In, OutKey, OutValue>
+	Map <OutKey, List <OutValue>> mapWithDerivedKeyAndValueGroup (
+			@NonNull Iterable <In> inItems,
+			@NonNull Function <In, OutKey> keyFunction,
+			@NonNull Function <In, OutValue> valueFunction) {
+
+		Map <OutKey, List <OutValue>> map =
+			new TreeMap <> ();
+
+		for (
+			In inItem
+				: inItems
+		) {
+
+			List <OutValue> outValues =
+				mapItemForKeyOrElseSet (
+					map,
+					keyFunction.apply (
+						inItem),
+					() -> new ArrayList<> ());
+
+			outValues.add (
+				valueFunction.apply (
+					inItem));
+
+		}
+
+		return map;
 
 	}
 

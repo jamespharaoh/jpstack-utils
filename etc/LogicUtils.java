@@ -4,6 +4,7 @@ import static wbs.utils.collection.CollectionUtils.collectionIsEmpty;
 import static wbs.utils.collection.CollectionUtils.collectionIsNotEmpty;
 import static wbs.utils.etc.EnumUtils.enumEqualSafe;
 import static wbs.utils.etc.EnumUtils.enumNotEqualSafe;
+import static wbs.utils.etc.Misc.doNothing;
 import static wbs.utils.etc.Misc.shouldNeverHappen;
 import static wbs.utils.etc.NullUtils.isNotNull;
 import static wbs.utils.etc.OptionalUtils.optionalIsPresent;
@@ -993,6 +994,7 @@ class LogicUtils {
 					retryExceptionHandler.accept (
 						attempt,
 						exception);
+
 				}
 
 				Duration pause =
@@ -1035,13 +1037,31 @@ class LogicUtils {
 
 	}
 
+	public static <Type>
+	Type attemptWithRetries (
+			@NonNull Long maxAttempts,
+			@NonNull Duration backoffTime,
+			@NonNull Supplier <Type> task)
+		throws InterruptedException {
+
+		return attemptWithRetries (
+			maxAttempts,
+			backoffTime,
+			task,
+			(attempt, retryException) ->
+				doNothing (),
+			(attempt, finalException) ->
+				doNothing ());
+
+	}
+
 	public static
 	void attemptWithRetriesVoid (
 			@NonNull Long maxAttempts,
 			@NonNull Duration backoffTime,
 			@NonNull Runnable task,
-			@NonNull BiConsumer <Long, Exception> retryExceptionHandler,
-			@NonNull BiConsumer <Long, Exception> finalExceptionHandler)
+			@NonNull BiConsumer <Long, RuntimeException> retryExceptionHandler,
+			@NonNull BiConsumer <Long, RuntimeException> finalExceptionHandler)
 		throws InterruptedException {
 
 		for (
@@ -1058,7 +1078,7 @@ class LogicUtils {
 
 					return;
 
-				} catch (Exception exception) {
+				} catch (RuntimeException exception) {
 
 					retryExceptionHandler.accept (
 						attempt,
@@ -1088,15 +1108,6 @@ class LogicUtils {
 
 					throw exception;
 
-				} catch (Exception exception) {
-
-					finalExceptionHandler.accept (
-						attempt,
-						exception);
-
-					throw new RuntimeException (
-						exception);
-
 				}
 
 			}
@@ -1104,6 +1115,24 @@ class LogicUtils {
 		}
 
 		throw shouldNeverHappen ();
+
+	}
+
+	public static
+	void attemptWithRetriesVoid (
+			@NonNull Long maxAttempts,
+			@NonNull Duration backoffTime,
+			@NonNull Runnable task)
+		throws InterruptedException {
+
+		attemptWithRetriesVoid (
+			maxAttempts,
+			backoffTime,
+			task,
+			(attempt, retryException) ->
+				doNothing (),
+			(attempt, finalException) ->
+				doNothing ());
 
 	}
 
