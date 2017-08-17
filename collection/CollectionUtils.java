@@ -325,7 +325,8 @@ class CollectionUtils {
 			isNull (
 				value)
 		) {
-			throw new NullPointerException ();
+			throw new NullPointerException (
+				"First element is null");
 		}
 
 		return value;

@@ -4,6 +4,7 @@ import static wbs.web.utils.HtmlUtils.htmlEncode;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterators;
@@ -244,6 +245,22 @@ class StringFormatter {
 	}
 
 	public static
+	class RegularExpressionConversion
+		implements Conversion {
+
+		@Override
+		public
+		String convert (
+				@NonNull Object argument) {
+
+			return Pattern.quote (
+				argument.toString ());
+
+		}
+
+	}
+
+	public static
 	class UrlConversion
 		implements Conversion {
 
@@ -280,13 +297,14 @@ class StringFormatter {
 	}
 
 	private final static
-	Map<Character,Conversion> standardConversions =
-		ImmutableMap.<Character,Conversion>builder ()
+	Map <Character, Conversion> standardConversions =
+		ImmutableMap.<Character, Conversion> builder ()
 
 		.put ('d', new DecimalConversion ())
-		.put ('s', new StringConversion ())
 		.put ('h', new HtmlConversion ())
 		.put ('j', new JavaScriptConversion ())
+		.put ('r', new RegularExpressionConversion ())
+		.put ('s', new StringConversion ())
 		.put ('u', new UrlConversion ())
 
 		.build ();

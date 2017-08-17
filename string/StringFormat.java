@@ -129,12 +129,12 @@ enum StringFormat {
 		return this::verifyAndThrow;
 	}
 
-	static
+	public final static
 	Pattern camelCasePattern =
 		Pattern.compile (
 			"([a-z]+|[0-9])([A-Z][a-z]*|[0-9])*");
 
-	static
+	public final static
 	Pattern classNamePattern =
 		Pattern.compile (
 			joinWithPipe (
@@ -156,17 +156,17 @@ enum StringFormat {
 					"(\\[\\])?"),
 				"void"));
 
-	static
+	public final static
 	Pattern hyphenatedPattern =
 		Pattern.compile (
 			"[a-z0-9]+(-[a-z0-9]+)*");
 
-	static
+	public final static
 	Pattern integerPattern =
 		Pattern.compile (
-			"0|[1-9][0-9]+");
+			"-?(0|[1-9][0-9]*)");
 
-	static
+	public final static
 	Pattern snakeCasePattern =
 		Pattern.compile (
 			"[a-z0-9]+(_[a-z0-9]+)*");

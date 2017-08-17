@@ -2164,4 +2164,23 @@ class StringUtils {
 		return StringUtils::stringIntern;
 	}
 
+	public static
+	Pattern patternCompile (
+			@NonNull CharSequence source) {
+
+		return Pattern.compile (
+			source.toString ());
+
+	}
+
+	public static
+	Pattern patternCompileFormat (
+			@NonNull CharSequence ... arguments) {
+
+		return Pattern.compile (
+			stringFormatArray (
+				arguments));
+
+	}
+
 }
